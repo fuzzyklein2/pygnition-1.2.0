@@ -1,0 +1,32 @@
+# .envrc — Drop-in template for Python projects using Pygnition base venv
+
+PYGNITION_BASE="$HOME/projects/pygnition-1.0.1/.venv"
+VENV_DIR=".venv"
+BACKUP_DIR=".venv_backup_$(date +%Y%m%d%H%M%S)"
+KERNEL_NAME="$(basename "$PWD")"
+DISPLAY_NAME="Python ($KERNEL_NAME)"
+
+# Backup existing venv if it exists
+[ -d "$VENV_DIR" ] && mv "$VENV_DIR" "$BACKUP_DIR" && echo "Existing venv backed up to $BACKUP_DIR"
+
+# Create new venv with system-site-packages (so Pygnition is visible)
+"$PYGNITION_BASE/bin/python" -m venv --system-site-packages "$VENV_DIR"
+
+# Activate new venv
+source "$VENV_DIR/bin/activate"
+
+# Ensure Pygnition is visible
+export PYTHONPATH="${PYTHONPATH}:${HOME}/projects/pygnition-1.0.1"
+export PATH="$VENV_DIR/bin:$PATH"
+
+# Install ipykernel if missing
+if ! python -m pip show ipykernel >/dev/null 2>&1; then
+    pip install --upgrade pip
+    pip install ipykernel
+fi
+
+# Register Jupyter kernel (ignore if already exists)
+python -m ipykernel install --user --name="$KERNEL_NAME" --display-name "$DISPLAY_NAME" 2>/dev/null || true
+
+echo "Venv activated. Pygnition available. Jupyter kernel '$DISPLAY_NAME' registered."
+[ -d "$BACKUP_DIR" ] && echo "Old venv backed up at $BACKUP_DIR."
