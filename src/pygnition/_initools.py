@@ -10,6 +10,7 @@ from typing import Optional, Callable
 from ._auto_doc import auto_doc
 from ._data_tools import is_valid_data_line
 from ._read_lines import read_lines
+from ._resources import
 from ._version import VERSION
 
 PKG_PATH = Path(__file__).resolve().parent

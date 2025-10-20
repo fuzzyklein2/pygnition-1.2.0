@@ -33,12 +33,16 @@ details here.
 
 """
 
-import magic
+from functools import partial
 import os
 from pathlib import Path
 import subprocess
+import sys
 
-from .where import *
+import magic
+
+from .tools import cd, run_cmd
+from .where import cwd_mover, PROGRAM_NAME
 
 def choose_file(
     title="Select a file",
@@ -177,6 +181,11 @@ def choose_file(
 
     return valid[0]
 
+pick_file = partial(choose_file,
+                    initial_path=Path(f'src/{PROGRAM_NAME}/'),
+                    filters=[('Python file', '*.py')]
+                   ) # Chooses a Python file
+
 def file_info(path: str, mime: bool = False, encoding: bool = False) -> str:
     """
     Return type information for a file, similar to the `file` command.
@@ -197,19 +206,33 @@ def file_info(path: str, mime: bool = False, encoding: bool = False) -> str:
 
 class File():
     def __init__(self, p:Path):
-        self.p = p
+        self.path = p
 
     def output(self):
-        result = self.p.name
-        if self.p.is_dir():
+        result = self.path.name
+        if self.path.is_dir():
             result = '[blue bold]' + result + '[/blue bold]'
         return result
 
     def info(self):
-        return file_info(str(p.resolve()))
+        return file_info(str(self.path.resolve()))
 
     def mime(self):
-        return file_info(str(p.resolve()))
+        return file_info(str(self.path.resolve()))
+
+class SrcFile(File):
+    pass
+
+class PyFile(SrcFile):
+    @cwd_mover()
+    def run(self):
+        cd(self.path.parent.parent)
+        process = run_cmd([sys.executable, '-m', f'{self.path.parent.name}.{self.path.stem}'])
+        cd(PyFile.run._CWD)
+        return process
+
+class Folder(File):
+    pass
 
 if __name__ == '__main__':
     print(F"Running {Path(__file__).name}")

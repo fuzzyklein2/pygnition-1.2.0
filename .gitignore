@@ -1,7 +1,8 @@
+
 # Jupyter
 *.ipynb
 .ipynb_checkpoints/
-
+notebooks/
 # Python caches
 __pycache__/
 *.py[cod]

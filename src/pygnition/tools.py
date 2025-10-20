@@ -43,7 +43,7 @@ from subprocess import run
 
 from rich import print as rp
 
-from .colors import DIR_GREEN
+from .colors import DIR_BLUE, DIR_GREEN
 from .picts import ASK_PICT, DEBUG_PICT, FOLDER_PICT, INFO_PICT, NEWLINE
 
 @auto_doc("Return the current working directory.")
@@ -53,7 +53,7 @@ def cwd():
 @auto_doc("Print `cwd()` and return it.")
 def pwd():
     CWD = cwd()
-    rp(f'{FOLDER_PICT}Current working directory: [{DIR_GREEN}]{CWD}[end]')
+    rp(f'{FOLDER_PICT}Current working directory: [{DIR_BLUE}]{CWD}[end]')
     return CWD
 
 @auto_doc("Change the current working directory.")

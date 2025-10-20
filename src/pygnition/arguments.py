@@ -66,6 +66,11 @@ def get_args(p:Path|str)->list[list[list|dict]]|None:
 
     """
     if type(p) is str: p = Path(p)
+
+    if p.suffix == '.pkl':
+        with open(p, 'rb') as f:  # 'rb' = read binary
+            return pickle.load(f)
+
     result = list()
     with open(p, newline='') as f:
         reader = csv.DictReader(f)
@@ -86,41 +91,6 @@ def get_args(p:Path|str)->list[list[list|dict]]|None:
             L.append(D)
             result.append(L)
     return result
-    
-# @auto_doc()
-# def get_args(p:Path|str)->list[list[list|dict]]|None:
-#     """ Look for arguments in a CSV.
-#     """
-#     if type(p) is str:
-#         p = Path(p)
-#     df = pd.read_csv(p).fillna('')
-#     retval = list()
-#     # for each row
-#     for i in range(len(df)):
-#         L = list()
-#         L2 = list()
-
-#         SHORT = df.at[i, 'short']
-#         if SHORT:
-#             L2.append(SHORT)
-#         LONG = df.at[i, 'long']
-#         if LONG:
-#             L2.append(LONG)
-
-#         # @bug Typing one hyphen instead of 2 for long options
-#         #      can cause havoc with options that take files...
-
-#         L.append(L2)
-#         D = dict()
-
-#         for c in df:
-#             if not c in {'short', 'long'}:
-#                 value = df.at[i, c]
-#                 if value:
-#                     D[c] = value
-#         L.append(D)
-#         retval.append(L)
-#     return retval
 
 @auto_doc()
 def parse_arguments(arg_file:Path|str,

@@ -1,1 +1,2 @@
 DIR_GREEN = '#0ff407'
+DIR_BLUE = '#0582cd'

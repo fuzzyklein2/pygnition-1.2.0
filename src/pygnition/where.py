@@ -39,6 +39,7 @@ details here.
 # ---------------------------
 
 from enum import auto, Enum
+from functools import wraps
 from inspect import getsourcefile
 import os
 from pathlib import Path
@@ -181,6 +182,45 @@ def display_where_info():
 # ---------------------------
 # Optional: display info if testing
 # ---------------------------
+
+# def cwd_mover(current_cwd=None):
+#     """
+#     Decorator that attaches the current working directory to the decorated function
+#     as the attribute `_CWD`.
+
+#     If no directory is provided, it captures the cwd at decoration time.
+#     """
+#     def decorator(func):
+#         func._CWD = Path(current_cwd) if current_cwd else Path.cwd()
+#         return func
+#     return decorator
+
+def cwd_mover(current_cwd=None):
+    """
+    Decorator that attaches the current working directory to the decorated
+    function or method as the attribute `_CWD`.
+
+    Works for standalone functions and class methods.
+    """
+    def decorator(func):
+        cwd = Path(current_cwd) if current_cwd else Path.cwd()
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        # attach to both, so it can be accessed either way
+        wrapper._CWD = cwd
+        try:
+            func._CWD = cwd
+        except AttributeError:
+            pass  # some built-in functions can't be assigned to
+
+        return wrapper
+
+    return decorator
+
+
 if __name__ == "__main__":
     print('Running where')
     display_where_info()

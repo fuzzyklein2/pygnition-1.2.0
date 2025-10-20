@@ -35,9 +35,12 @@ details here.
 
 import atexit
 
+from rich import print as rp
+
 from .lumberjack import debug, error, info, warn, stop
-from .picts import CHECK_PICT, WAVE_PICT
+from .picts import CHECK_PICT, CONSTRUCTION_PICT, WARNING_PICT, WAVE_PICT
 from .settings import Settings
+from .where import PROGRAM_NAME
 
 class Program(Settings):
     def __init__(self, *args, **kwargs):
@@ -46,6 +49,10 @@ class Program(Settings):
     def run(self):
         debug(f'Running {self.program_name}')
         self.dump()
+
+    def under_construction(self):
+        rp(f"{WARNING_PICT}[yellow bold]WARNING[/yellow bold]: {PROGRAM_NAME} is under construction! {CONSTRUCTION_PICT}")
+
 
 if __name__ == '__main__':
     Program().run()

@@ -33,8 +33,6 @@ details here.
 
 """
 
-
-
 import logging
 import os
 from pathlib import Path
@@ -63,7 +61,7 @@ ARGS_FILE = PROJ_DATA / 'std_opts.csv'
 # CONFIG_FILE = PROJECT_DIR / 'etc/config.ini'
 # LOG_FILE = PROJECT_DIR / f'logs/{PROGRAM_NAME}.log'
 if not USER_PREFS_DIR.exists():
-    shutil.copytree(PROJECT_DIR / 'etc', USER_PREFS_DIR)
+    shutil.copytree(PKG_PATH / 'etc', USER_PREFS_DIR)
 CONFIG_FILES = [USER_PREFS_DIR / s for s in os.listdir(USER_PREFS_DIR) if Path(s).suffix in {'.ini', '.cfg'}]
 
 LOG_FILE = USER_DATA_DIR / f'logs/{PROGRAM_NAME}.log'

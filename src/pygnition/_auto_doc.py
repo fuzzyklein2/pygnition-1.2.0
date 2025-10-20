@@ -87,6 +87,8 @@ def greet(name: str) -> str:
 
 
 if __name__ == "__main__":
-    print(add.__doc__)
-    print("\n" + "-" * 40 + "\n")
-    print(greet.__doc__)
+    # print(add.__doc__)
+    # print("\n" + "-" * 40 + "\n")
+    # print(greet.__doc__)
+    import doctest
+    doctest.testmod()
