@@ -3,6 +3,7 @@
 *.ipynb
 .ipynb_checkpoints/
 notebooks/
+Worksheet
 # Python caches
 __pycache__/
 *.py[cod]
@@ -35,3 +36,4 @@ output*
 activate
 setup_venv
 
+bin/

@@ -209,6 +209,11 @@ def file_info(path: str, mime: bool = False, encoding: bool = False) -> str:
 
     return ms.from_file(str(Path(path)))
 
+def is_hidden(p:str|Path) -> bool:
+    return any(part.startswith('.') for part in Path(p).parts)
+
+def is_visible(p:str|Path)->bool:
+    return not is_hidden(p)
 
 class File():
     def __init__(self, p:Path):

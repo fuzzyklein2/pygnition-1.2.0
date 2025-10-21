@@ -32,14 +32,13 @@ details here.
 
 """
 
-
-
-
 from pathlib import Path
 from pprint import pformat
 
-from .picts import DEBUG_PICT, GEAR_PICT
-from .program import Program
+from .files import is_hidden, is_visible
+from .lumberjack import debug, error, info, stop, warn 
+from .picts import DEBUG_PICT, FOLDER_PICT, GEAR_PICT
+from .program import Program, PROGRAM_NAME
 
 class Filter(Program):
     def __init__(self, *args, **kwargs):
@@ -50,23 +49,19 @@ class Filter(Program):
 {pformat(self.paths)}
 """)
 
-    def process_directory(self, d:Path):
-        if self.verbose:
-            print(f'{FOLDER_PICT}{"Processing" if self.args.recursive else "Skipping"} directory: {str(d)} ...')
+    def process_directory(self, p:Path):
         if self.recursive:
-            for p in (d / f for f in os.listdir(d)):
-                self.process_path(p)
-
-    def is_hidden(self, p:Path) -> bool:
-        return p.name.startswith('.')
+            if self.verbose: print(f'{FOLDER_PICT}Processing directory: {str(p)} ...')
+            for f in [Path(s) for s in p.rglob('*') if is_visible(s) or self.all]:
+                self.process_path(Path(f))
+        else:
+            if self.verbose: print(f'{FOLDER_PICT}Skipping directory: {str(p)} ...')
 
     def process_file(self, p:Path):
-        if self.verbose:
-            print(f'Processing {str(p)} ...')
+        if self.verbose: print(f'Processing {str(p)} ...')
 
     def process_path(self, p:Path):
-        if self.verbose:
-            print(f"{GEAR_PICT}Processing {str(p)} ...")
+        if self.verbose: print(f"{GEAR_PICT}Processing {str(p)} ...")
             
         if not p.exists():
             warn(f"File {str(p)} does not exist!")
@@ -84,7 +79,7 @@ class Filter(Program):
                 print(f'{LINK_PICT}Skipping symbolic link {output} -> {p.readlink()} ...')
             return
                 
-        if self.is_hidden(p) and not self.all:
+        if is_hidden(p) and not self.all:
             if self.verbose:
                 print(f'Skipping {str(p)} ...')
             return
@@ -105,9 +100,11 @@ class Filter(Program):
         # print(f"{STOP_PICT}Execution complete.")
 
 if __name__ == '__main__':
+    print(type(is_visible))
     f = Filter()
     if f.testing:
         info(f'Running {PROGRAM_NAME} ...')
-        debug(f'Command line arguments:\n\n{pformat(ARGS.args)}\n')
+        debug(f'Command line arguments:\n\n{pformat(f.args)}\n')
     Filter().run()
     # print(RECURSIVE)
+    

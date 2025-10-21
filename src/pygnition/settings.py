@@ -124,17 +124,18 @@ if ENV: SETTINGS.update(ENV)
 if ARGS: SETTINGS.update(vars(ARGS))
 if INPUT: SETTINGS.update({'input', INPUT})
 
+
+
 class Settings(SimpleNamespace):
     def __init__(self, *args, **kwargs):
         super().__init__(**SETTINGS)
         self.config_files = CONFIG_FILES
+        if self.testing: self.debug = True
+        if self.debug: self.verbose = True
 
     def dumps(self):
         d = {k: v for k, v in vars(ARGS).items() if k != 'args'} if ARGS else 'None'
         return f'''
-Application directory: {self.app_dir}
-Data directory:        {self.user_data}
-
 Command line options:
 {pformat(d)}
 
