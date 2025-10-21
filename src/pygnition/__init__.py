@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from ._initools import *
+from ._auto_doc import auto_doc
+from ._metadata import *
 
 __doc__ = f"""The 🔥  pygnition 🔥  package sets up an environment for any script that imports it.
 
@@ -19,12 +20,12 @@ Stay tuned for updates.
 
 ## Date
 
-{last_saved_datetime(__file__).date()}
+{LAST_SAVED_DATE}
 
 ## Usage
 
 ```python
-from {PKG_NAME}.program import Program
+from pygnition.program import Program
 Program().run()
 
 ## System Requirements
@@ -34,3 +35,5 @@ Program().run()
 This file may re-export selected symbols from submodules for convenience.
 Check the package [reference documentation](docs/markdown/index.md) for details.
 """
+
+CWD = Path.cwd()

@@ -8,14 +8,14 @@ MODULE_NAME = Path(__file__).stem
 
 __doc__ = f"""Python IDE for the command line.
 
-========== ⚠️ WARNING! ⚠️ ==========
+========== ⚠️  WARNING! ⚠️  ==========
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PKG_NAME}.{MODULE_NAME}
+Module: {PROJECT_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
-Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+Date: {LAST_SAVED_DATE}
 
 ## Description
 
@@ -23,11 +23,10 @@ This module defines the Workshop class.
 
 ## Typical Use
 ```python
-app = Workshop()
-app.run()
+args = parse_arguments()
 
-Notes
------
+## Notes
+
 You can include implementation notes, dependencies, or version-specific
 details here.
 
@@ -53,8 +52,10 @@ IGNITION_PATH = LOCATION_PATH.read_text().strip()
 sys.path.insert(0, str(IGNITION_PATH))
 '''
 
+from .lumberjack import stop
+from pygnition._metadata import PACKAGE_PATH as PROJECT_DIR
 from pygnition.picts import *
-from pygnition.settings import *
+from .settings import Settings
 
 class MyTCPServer(socketserver.TCPServer):
     def __init__(self, server_address, RequestHandlerClass):

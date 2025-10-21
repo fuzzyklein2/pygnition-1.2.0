@@ -1,1 +1,0 @@
-ERROR = f"❗  ERROR: "

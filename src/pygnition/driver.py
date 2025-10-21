@@ -8,14 +8,14 @@ MODULE_NAME = Path(__file__).stem
 
 __doc__ = f"""Python IDE for the command line.
 
-========== ⚠️ WARNING! ⚠️ ==========
+========== ⚠️  WARNING! ⚠️  ==========
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PKG_NAME}.{MODULE_NAME}
+Module: {PROJECT_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
-Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+Date: {LAST_SAVED_DATE}
 
 ## Description
 
@@ -23,15 +23,15 @@ This module defines the Workshop class.
 
 ## Typical Use
 ```python
-app = Workshop()
-app.run()
+args = parse_arguments()
 
-Notes
------
+## Notes
+
 You can include implementation notes, dependencies, or version-specific
 details here.
 
 """
+
 
 import argparse
 from argparse import ArgumentParser as AP
@@ -43,12 +43,12 @@ import shutil
 
 from pygnition.arguments import get_args
 from pygnition.configure import configure
-from pygnition.constants import EPILOG
+# from pygnition.constants import EPILOG
 from pygnition.environment import Environment
 from pygnition.lumberjack import debug, error, info, stop, warn
 from pygnition.program import Program
 from pygnition.settings import Settings, SETTINGS
-from pygnition.where import USER_PREFS_DIR
+from pygnition.where import PROJ_DATA, USER_PREFS_DIR
 
 class Driver(Cmd, Program):
 
@@ -78,7 +78,7 @@ class Driver(Cmd, Program):
             options = get_args(OPTS_FILE)
         ap = AP(prog=name,
                 description='',
-                epilog=EPILOG)
+                epilog=(PROJ_DATA / 'epilog.txt').read_text().strip())
 
         for opt in options:
             ap.add_argument(*opt[0], **opt[1])

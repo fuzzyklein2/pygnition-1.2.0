@@ -8,14 +8,14 @@ MODULE_NAME = Path(__file__).stem
 
 __doc__ = f"""Python IDE for the command line.
 
-========== ⚠️ WARNING! ⚠️ ==========
+========== ⚠️  WARNING! ⚠️  ==========
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PKG_NAME}.{MODULE_NAME}
+Module: {PROJECT_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
-Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+Date: {LAST_SAVED_DATE}
 
 ## Description
 
@@ -23,23 +23,24 @@ This module defines the Workshop class.
 
 ## Typical Use
 ```python
-app = Workshop()
-app.run()
+args = parse_arguments()
 
-Notes
------
+## Notes
+
 You can include implementation notes, dependencies, or version-specific
 details here.
 
 """
 
+
 import os
 from pprint import pformat
 
-from pygnition.utils import *
+from ._metadata import PROJECT_NAME
+from .utils import *
 
 class Environment(dict):
-    def __init__(self, prefix=PROGRAM_NAME.upper()+'_', *args, **kwargs):
+    def __init__(self, prefix=PROJECT_NAME.upper()+'_', *args, **kwargs):
         super().__init__(self, *args, **kwargs)
         
         KEYS = grep(prefix, os.environ.keys())

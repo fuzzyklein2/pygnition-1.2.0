@@ -8,14 +8,14 @@ MODULE_NAME = Path(__file__).stem
 
 __doc__ = f"""Python IDE for the command line.
 
-========== ⚠️ WARNING! ⚠️ ==========
+========== ⚠️  WARNING! ⚠️  ==========
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PKG_NAME}.{MODULE_NAME}
+Module: {PROJECT_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
-Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+Date: {LAST_SAVED_DATE}
 
 ## Description
 
@@ -23,22 +23,23 @@ This module defines the Workshop class.
 
 ## Typical Use
 ```python
-app = Workshop()
-app.run()
+args = parse_arguments()
 
-Notes
------
+## Notes
+
 You can include implementation notes, dependencies, or version-specific
 details here.
 
 """
 
+
 from datetime import datetime
 import sys
 
+from .interpreters import RUNNING_CLI
 from .picts import CRITICAL_PICT, current_clock_pict, DEBUG_PICT, ERROR_PICT, GEAR_PICT, INFO_PICT, LOG_PICT, WARNING_PICT
 from .tools import *
-from .where import VERBOSE
+from .where import USER_DATA_DIR, VERBOSE
 
 LOG_PICTS = { logging.DEBUG: DEBUG_PICT,
               logging.INFO: INFO_PICT,
@@ -107,6 +108,6 @@ def stop(message):
         exit(1)
 
 if __name__ == '__main__':
-    setuplog(USER_DATA_DIR / f'logs/{PROGRAM_NAME}.log',
+    setuplog(USER_DATA_DIR / f'logs/{PROJECT_NAME}.log',
              level=logging.DEBUG)
-    debug(f'Testing {PROGRAM_NAME}')
+    debug(f'Testing {PROJECT_NAME}')

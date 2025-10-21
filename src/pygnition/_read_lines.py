@@ -1,10 +1,8 @@
 from functools import singledispatch
 from pathlib import Path
 
-from ._auto_doc import auto_doc
-from ._errors import ERROR
+ERROR = f"❗  ERROR: "
 
-@auto_doc("Read the lines of a file into a list of strings.")
 @singledispatch
 def read_lines(arg)->None:
     print(f"{ERROR}read_lines : Bad argument")
@@ -19,4 +17,3 @@ def _(p:Path)->list|None:
 @read_lines.register
 def _(s:str)->list|None:
     return read_lines(Path(s))
-    

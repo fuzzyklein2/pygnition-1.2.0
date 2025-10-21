@@ -12,10 +12,10 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PKG_NAME}.{MODULE_NAME}
+Module: {PROJECT_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
-Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+Date: {LAST_SAVED_DATE}
 
 ## Description
 
@@ -39,7 +39,7 @@ import sys
 
 # import pandas as pd
 
-from .where import PROGRAM_NAME
+from .where import PROJ_DATA
 
 EPILOG = (PROJ_DATA / 'epilog.txt').read_text()
 
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     from pprint import pprint as pp
     ARGS_CSV_FILE = PROJ_DATA / 'std_opts.csv'
     ARGS = parse_arguments(ARGS_CSV_FILE,
-                           PROGRAM_NAME,
+                           PROJECT_NAME,
                            VERSION,
                            DESCRIPTION,
                            EPILOG)

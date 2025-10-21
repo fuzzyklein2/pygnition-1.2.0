@@ -1,3 +1,38 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+
+from ._metadata import *
+
+MODULE_NAME = Path(__file__).stem
+
+__doc__ = f"""Python IDE for the command line.
+
+========== ⚠️  WARNING! ⚠️  ==========
+This project is currently under construction.
+Stay tuned for updates.
+
+Package: 🔥  pygnition 🔥
+Module: {MODULE_NAME}
+Version: {VERSION}
+Author: {AUTHOR}
+Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+
+## Description
+
+This module defines the Workshop class.
+
+## Typical Use
+```python
+args = parse_arguments()
+
+## Notes
+
+You can include implementation notes, dependencies, or version-specific
+details here.
+
+"""
+
 from datetime import date
 import inspect
 from pathlib import Path
@@ -87,8 +122,8 @@ def greet(name: str) -> str:
 
 
 if __name__ == "__main__":
-    # print(add.__doc__)
-    # print("\n" + "-" * 40 + "\n")
-    # print(greet.__doc__)
+    print(add.__doc__)
+    print("\n" + "-" * 40 + "\n")
+    print(greet.__doc__)
     import doctest
     doctest.testmod()

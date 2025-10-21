@@ -8,14 +8,14 @@ MODULE_NAME = Path(__file__).stem
 
 __doc__ = f"""Python IDE for the command line.
 
-========== ⚠️ WARNING! ⚠️ ==========
+========== ⚠️  WARNING! ⚠️  ==========
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PKG_NAME}.{MODULE_NAME}
+Module: {PROJECT_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
-Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+Date: {LAST_SAVED_DATE}
 
 ## Description
 
@@ -23,15 +23,15 @@ This module defines the Workshop class.
 
 ## Typical Use
 ```python
-app = Workshop()
-app.run()
+args = parse_arguments()
 
-Notes
------
+## Notes
+
 You can include implementation notes, dependencies, or version-specific
 details here.
 
 """
+
 
 # from argparse import ArgumentParser as AP
 from functools import partial, singledispatch, wraps
@@ -43,6 +43,7 @@ from subprocess import run
 
 from rich import print as rp
 
+from ._auto_doc import auto_doc
 from .colors import DIR_BLUE, DIR_GREEN
 from .picts import ASK_PICT, DEBUG_PICT, FOLDER_PICT, INFO_PICT, NEWLINE
 
@@ -139,7 +140,7 @@ def get_func_name2(func):
     return wrapper
 
 @singledispatch
-@auto_doc_named()
+@auto_doc()
 def subdirs(arg=None, all: bool = False) -> list[Path] | None:
     """
     Return a list of top-level subdirectories of `arg`
@@ -153,7 +154,7 @@ def subdirs(arg=None, all: bool = False) -> list[Path] | None:
     error(f": subdirs : bad argument : {arg!r} : must be str or Path")
 
 
-@auto_doc_named()
+@auto_doc()
 def _path_impl(p: Path, all: bool = False) -> list[Path] | None:
     """Return full Paths to top-level subdirectories within `p`."""
     if not p.exists() or not p.is_dir():
@@ -175,7 +176,6 @@ for cls in (Path, PosixPath, WindowsPath):
 
 
 @subdirs.register(str)
-@auto_doc_named()
 def _(s: str, all: bool = False) -> list[Path] | None:
     """Convert the str to a Path and call subdirs(p:Path)."""
     return subdirs(Path(s), all=all)

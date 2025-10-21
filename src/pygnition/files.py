@@ -8,14 +8,14 @@ MODULE_NAME = Path(__file__).stem
 
 __doc__ = f"""Python IDE for the command line.
 
-========== ⚠️ WARNING! ⚠️ ==========
+========== ⚠️  WARNING! ⚠️  ==========
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PKG_NAME}.{MODULE_NAME}
+Module: {PROJECT_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
-Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+Date: {LAST_SAVED_DATE}
 
 ## Description
 
@@ -23,11 +23,10 @@ This module defines the Workshop class.
 
 ## Typical Use
 ```python
-app = Workshop()
-app.run()
+args = parse_arguments()
 
-Notes
------
+## Notes
+
 You can include implementation notes, dependencies, or version-specific
 details here.
 
@@ -41,8 +40,11 @@ import sys
 
 import magic
 
+from ._metadata import PROJECT_NAME
 from .tools import cd, run_cmd
-from .where import cwd_mover, PROGRAM_NAME
+from .where import cwd_mover
+
+PROGRAM_NAME = PROJECT_NAME
 
 def choose_file(
     title="Select a file",
@@ -96,6 +98,10 @@ def choose_file(
     -------
     Path | list[Path] | None
         A Path object, or list of Paths, or None if user cancels.
+
+    ISSUE: Appears to change the current working directory.
+        Workaround seems to be to declare CWD global when the project starts
+        and change back to it at the end of any function that calls this one.
     """
 
     def zenity_available():

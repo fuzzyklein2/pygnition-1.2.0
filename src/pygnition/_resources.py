@@ -2,8 +2,6 @@
 from importlib import resources
 from pathlib import Path
 
-# from .where import PROJECT_NAME
-
 def load_data(folder: str, filename: str, text: bool = True) -> str | bytes:
     """
     Load a file from the package's `data` folder.
@@ -47,4 +45,4 @@ def read_file(path: Path) -> str:
 
 def pkg_path() -> Path:
     if __package__: return resources.files(f'{__package__}')
-    else: return Path(
+    else: return resources.files(CALLING_MODULE)

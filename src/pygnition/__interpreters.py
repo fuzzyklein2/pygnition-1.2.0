@@ -32,5 +32,14 @@ details here.
 
 """
 
-DIR_GREEN = '#0ff407'
-DIR_BLUE = '#0582cd'
+from enum import auto, Enum
+
+class Interpreters(Enum):
+    IPYTHON = auto()
+    CONSOLE = auto()
+    JUPYTER = auto()
+    CLI = auto()
+    GATEWAY = auto()
+    TKINTER = auto()
+    UNKNOWN = auto()
+

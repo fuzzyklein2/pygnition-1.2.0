@@ -8,14 +8,14 @@ MODULE_NAME = Path(__file__).stem
 
 __doc__ = f"""Python IDE for the command line.
 
-========== ⚠️ WARNING! ⚠️ ==========
+========== ⚠️  WARNING! ⚠️  ==========
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PKG_NAME}.{MODULE_NAME}
+Module: {PROJECT_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
-Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+Date: {LAST_SAVED_DATE}
 
 ## Description
 
@@ -23,15 +23,15 @@ This module defines the Workshop class.
 
 ## Typical Use
 ```python
-app = Workshop()
-app.run()
+args = parse_arguments()
 
-Notes
------
+## Notes
+
 You can include implementation notes, dependencies, or version-specific
 details here.
 
 """
+
 
 import logging
 import os
@@ -42,13 +42,13 @@ from types import SimpleNamespace
 
 from pygnition.arguments import parse_arguments
 from pygnition.configure import configure
-from pygnition.constants import DESCRIPTION, EPILOG, VERSION
+# from pygnition.constants import DESCRIPTION, EPILOG, VERSION
 from pygnition.environment import Environment
+from .interpreters import RUNNING_CLI
 from pygnition.lumberjack import debug, error, info, setuplog, stop, warn
 from pygnition.stdinput import get_piped_input
 from pygnition.tools import mkdir
-from pygnition.where import PYGNITION_DIRECTORY, PROGRAM_NAME, PROJECT_DIR, RUNNING_CLI, \
-                           USER_DATA_DIR, USER_PREFS_DIR, RUNNING_GATEWAY
+from .where import PROJ_DATA, USER_DATA_DIR, USER_PREFS_DIR
 
 # breakpoint()
 INPUT = get_piped_input()
@@ -64,7 +64,7 @@ if not USER_PREFS_DIR.exists():
     shutil.copytree(PKG_PATH / 'etc', USER_PREFS_DIR)
 CONFIG_FILES = [USER_PREFS_DIR / s for s in os.listdir(USER_PREFS_DIR) if Path(s).suffix in {'.ini', '.cfg'}]
 
-LOG_FILE = USER_DATA_DIR / f'logs/{PROGRAM_NAME}.log'
+LOG_FILE = USER_DATA_DIR / f'logs/{PROJECT_NAME}.log'
 
 # assert(PROJECT_DIR.exists())
 # assert(ARGS_FILE.exists())
@@ -74,7 +74,9 @@ ARGS = None
 if RUNNING_CLI:
     # print(f'Arguments file: {ARGS_FILE}')
     if ARGS_FILE.exists():
-        ARGS = parse_arguments(ARGS_FILE, PROGRAM_NAME, VERSION, DESCRIPTION, EPILOG)
+        ARGS = parse_arguments(ARGS_FILE, PROJECT_NAME, VERSION, DESCRIPTION,
+                               (PROJ_DATA / 'epilog.txt').read_text().strip())
+                              
 
 # assert(ARGS)
 
@@ -125,10 +127,7 @@ if INPUT: SETTINGS.update({'input', INPUT})
 class Settings(SimpleNamespace):
     def __init__(self, *args, **kwargs):
         super().__init__(**SETTINGS)
-        self.program_name = PROGRAM_NAME
-        self.user_data = USER_DATA_DIR
         self.config_files = CONFIG_FILES
-        self.app_dir = PROJECT_DIR
 
     def dumps(self):
         d = {k: v for k, v in vars(ARGS).items() if k != 'args'} if ARGS else 'None'

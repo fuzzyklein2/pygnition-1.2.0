@@ -12,10 +12,10 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PKG_NAME}.{MODULE_NAME}
+Module: {PROJECT_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
-Date: {str(last_saved_datetime(__file__).date()).split('.')[0]}
+Date: {LAST_SAVED_DATE}
 
 ## Description
 
@@ -31,6 +31,7 @@ You can include implementation notes, dependencies, or version-specific
 details here.
 
 """
+
 
 from functools import singledispatch
 
@@ -62,3 +63,5 @@ def _(p:Path, lang:str='python')->None:
 @display_source.register
 def _(obj:object, lang:str='python')->None:
     display_source(inspect.getsource(obj))
+
+# Get the path of the currently running Jupyter notebook.
