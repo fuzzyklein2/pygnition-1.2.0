@@ -44,7 +44,7 @@ from pygnition.arguments import parse_arguments
 from pygnition.configure import configure
 # from pygnition.constants import DESCRIPTION, EPILOG, VERSION
 from pygnition.environment import Environment
-from .interpreters import RUNNING_CLI
+from .interpreters import RUNNING_CLI, RUNNING_GATEWAY
 from pygnition.lumberjack import debug, error, info, setuplog, stop, warn
 from pygnition.stdinput import get_piped_input
 from pygnition.tools import mkdir
@@ -61,7 +61,7 @@ ARGS_FILE = PROJ_DATA / 'std_opts.csv'
 # CONFIG_FILE = PROJECT_DIR / 'etc/config.ini'
 # LOG_FILE = PROJECT_DIR / f'logs/{PROGRAM_NAME}.log'
 if not USER_PREFS_DIR.exists():
-    shutil.copytree(PKG_PATH / 'etc', USER_PREFS_DIR)
+    shutil.copytree(PACKAGE_PATH / 'etc', USER_PREFS_DIR)
 CONFIG_FILES = [USER_PREFS_DIR / s for s in os.listdir(USER_PREFS_DIR) if Path(s).suffix in {'.ini', '.cfg'}]
 
 LOG_FILE = USER_DATA_DIR / f'logs/{PROJECT_NAME}.log'

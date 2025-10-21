@@ -35,9 +35,11 @@ details here.
 from pathlib import Path
 from pprint import pformat
 
+from rich import print as rp
+
 from .files import is_hidden, is_visible
 from .lumberjack import debug, error, info, stop, warn 
-from .picts import DEBUG_PICT, FOLDER_PICT, GEAR_PICT
+from .picts import DEBUG_PICT, FOLDER_PICT, GEAR_PICT, LINK_PICT
 from .program import Program, PROGRAM_NAME
 
 class Filter(Program):
@@ -67,25 +69,43 @@ class Filter(Program):
             warn(f"File {str(p)} does not exist!")
             return
             
-        if p.is_symlink() and not self.follow:
-            if self.verbose:
-                target = p.readlink()
-                output = str()
-                exists = target.exists()
-                color = 'cyan' if exists else 'red'
-                output += f'[{color} bold]'
-                output += target.readlink()
-                output += f'[/{color} bold]'
-                print(f'{LINK_PICT}Skipping symbolic link {output} -> {p.readlink()} ...')
-            return
-                
         if is_hidden(p) and not self.all:
             if self.verbose:
                 print(f'Skipping {str(p)} ...')
             return
+
+        if p.is_block_device():
+            info(f'Skipping block device: {p.name}')
+
+        if p.is_char_device():
+            info(f'Skipping char device: {p.name}')
+
+        if p.is_fifo():
+            info(f'Skipping fifo: {p.name}')
+
+        if p.is_mount():
+            info(f'Skipping mount: {p.name}')
+
+        if p.is_socket():
+            info(f'Skipping socket: {p.name}')
         
+        if p.is_symlink():
+            target = p.readlink()
+            output = 'symbolic link '
+            exists = target.exists()
+            color = 'cyan' if exists else 'red'
+            output += f' --> [{color} bold] '
+            output += str(target)
+            output += f'[/{color} bold]'
+            if self.follow:
+                rp(f'{LINK_PICT}Processing {output}')
+                rp(f'{GEAR_PICT}Processing target [cyan][bold]{str(target.resolve())}')
+            else:
+                rp(f'{LINK_PICT}Skipping symbolic link {output}')
+            return
+                
         if p.is_dir():
-            return self.process_directory(p)
+            self.process_directory(p)
 
         self.process_file(p)
 

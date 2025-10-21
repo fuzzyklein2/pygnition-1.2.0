@@ -46,12 +46,17 @@ from .where import USER_DATA_DIR
 class Program(Settings):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.program_name = PROGRAM_NAME
         self.app_dir = PACKAGE_PATH
+        self.program_name = PACKAGE_NAME
+        if self.testing: print(f'{PACKAGE_PATH=}')
         self.user_data = USER_DATA_DIR
+        if self.testing: print(f'{USER_DATA_DIR=}')
 
     def run(self):
         debug(f'Running {self.program_name}')
+        if self.testing: self.test()
+
+    def test(self):
         self.dump()
 
     def under_construction(self):
