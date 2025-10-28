@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -30,168 +30,38 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
+## [GitHub]({get_upstream_url()})
+
 """
 
 from functools import partial
+import getpass
+from io import StringIO
+import mimetypes
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
+import tempfile
 
 import magic
+from rich import print as rp
 
-from ._metadata import PROJECT_NAME
-from .tools import cd, run_cmd
+# from ._metadata import PROJECT_NAME
+from .gui_tools import choose_file, zenity_available
+from .lumberjack import debug, error, info, stop, warn
+from .tools import cd, cwd, run_cmd
 from .where import cwd_mover
 
-PROGRAM_NAME = PROJECT_NAME
-
-def choose_file(
-    title="Select a file",
-    directory=False,
-    multiple=False,
-    save=False,
-    confirm_overwrite=True,
-    initial_path=None,
-    filters=None,
-    check_existence=True,
-    relative_path=False,
-    create_dirs=True,
-    always_list=False,
-    single_path=False,
-):
-    """
-    Open a Zenity file chooser dialog and return selected file path(s).
-
-    Falls back to command-line input if Zenity is not available
-    or if no display environment is present.
-
-    Parameters
-    ----------
-    title : str
-        Window title for the dialog.
-    directory : bool
-        If True, choose a directory instead of a file.
-    multiple : bool
-        If True, allow multiple selections.
-    save : bool
-        If True, show a 'Save As' dialog instead of 'Open File'.
-    confirm_overwrite : bool
-        If True, ask for confirmation before overwriting (used with save=True).
-    initial_path : str | Path | None
-        Optional starting path (directory or file name).
-    filters : list[tuple[str, str]] | None
-        A list of (name, pattern) pairs.
-    check_existence : bool
-        If True, verify existence (open mode) or warn/auto-create (save mode).
-    relative_path : bool
-        If True, returned paths are relative to current working directory.
-    create_dirs : bool
-        If True and save=True, auto-create parent directories if missing.
-    always_list : bool
-        If True, always return a list of Path objects, even for single selection.
-    single_path : bool
-        If True, always return a single Path (first item if multiple selected).
-        Overrides `always_list`.
-
-    Returns
-    -------
-    Path | list[Path] | None
-        A Path object, or list of Paths, or None if user cancels.
-
-    ISSUE: Appears to change the current working directory.
-        Workaround seems to be to declare CWD global when the project starts
-        and change back to it at the end of any function that calls this one.
-    """
-
-    def zenity_available():
-        return (
-            os.environ.get("DISPLAY")
-            and subprocess.run(["which", "zenity"], capture_output=True).returncode == 0
-        )
-
-    def ensure_valid_path(p):
-        if not check_existence:
-            return True
-        if save:
-            if p.exists() and confirm_overwrite:
-                ans = input(f"⚠️  '{p}' exists. Overwrite? [y/N]: ").strip().lower()
-                return ans == "y"
-            if create_dirs and not p.parent.exists():
-                try:
-                    p.parent.mkdir(parents=True, exist_ok=True)
-                    print(f"📂 Created parent directories for '{p}'")
-                except Exception as e:
-                    print(f"❌ Failed to create directories: {e}")
-                    return False
-            return True
-        else:
-            if not p.exists():
-                print(f"❌ File or directory not found: {p}")
-                return False
-            return True
-
-    def finalize_path(p):
-        p = p.expanduser()
-        return p.relative_to(Path.cwd()) if relative_path else p.resolve()
-
-    # --- Zenity GUI ---
-    if zenity_available():
-        cmd = ["zenity", "--file-selection", f"--title={title}"]
-        if directory:
-            cmd.append("--directory")
-        if multiple:
-            cmd.extend(["--multiple", "--separator=|"])
-        if save:
-            cmd.append("--save")
-            if confirm_overwrite:
-                cmd.append("--confirm-overwrite")
-        if initial_path:
-            cmd.append(f"--filename={Path(initial_path).expanduser()}")
-        if filters:
-            for name, pattern in filters:
-                cmd.extend(["--file-filter", f"{name} ({pattern}) | {pattern}"])
-
-        result = subprocess.run(cmd, check=False, capture_output=True, text=True)
-        output = result.stdout.strip()
-        if not output:
-            return [] if always_list else None
-
-        paths = [Path(p) for p in output.split("|")] if multiple else [Path(output)]
-        valid = [finalize_path(p) for p in paths if ensure_valid_path(p)]
-
-    # --- CLI fallback ---
-    else:
-        print(f"\n[Zenity not available or no display detected]\n{title}")
-        if multiple:
-            raw = input("Enter one or more paths (separated by '|'): ").strip()
-            if not raw:
-                return [] if always_list else None
-            paths = [Path(p.strip()).expanduser() for p in raw.split("|")]
-            valid = [finalize_path(p) for p in paths if ensure_valid_path(p)]
-        else:
-            raw = input("Enter a file path (or leave blank to cancel): ").strip()
-            if not raw:
-                return [] if always_list else None
-            p = Path(raw).expanduser()
-            valid = [finalize_path(p)] if ensure_valid_path(p) else []
-
-    if not valid:
-        return [] if always_list else None
-
-    if single_path:
-        return valid[0]
-
-    if multiple or always_list:
-        return valid
-
-    return valid[0]
+PROGRAM_NAME = PACKAGE_NAME
 
 pick_file = partial(choose_file,
                     initial_path=Path(f'src/{PROGRAM_NAME}/'),
                     filters=[('Python file', '*.py')]
                    ) # Chooses a Python file
 
+@auto_doc(AUTO_DOC_HEAD)
 def file_info(path: str, mime: bool = False, encoding: bool = False) -> str:
     """
     Return type information for a file, similar to the `file` command.
@@ -208,42 +78,319 @@ def file_info(path: str, mime: bool = False, encoding: bool = False) -> str:
         ms = magic.Magic()
 
     return ms.from_file(str(Path(path)))
-
+    
+@auto_doc(AUTO_DOC_HEAD)
 def is_hidden(p:str|Path) -> bool:
     return any(part.startswith('.') for part in Path(p).parts)
 
+@auto_doc(AUTO_DOC_HEAD)
 def is_visible(p:str|Path)->bool:
     return not is_hidden(p)
 
-class File():
-    def __init__(self, p:Path):
-        self.path = p
+# --- Base File Factory ---
+@auto_class_doc(AUTO_DOC_HEAD)
+class File:
+    _mime_registry: dict[str, type] = {}
+    _ext_registry: dict[str, type] = {}
+    _folder_registry: list[tuple[type, callable]] = []
 
-    def output(self):
+    @auto_doc(AUTO_DOC_HEAD)
+    def __new__(cls, p: str | Path | None = None):
+        if cls is not File:
+            return super().__new__(cls)
+        if p is None:
+            return super().__new__(cls)
+
+        path = Path(p)
+
+        # --- Folder detection ---
+        if path.is_dir():
+            for subclass, predicate in cls._folder_registry:
+                try:
+                    if predicate(path):
+                        return super().__new__(subclass)
+                except Exception:
+                    continue
+            return super().__new__(Folder)
+
+        # --- Extension detection ---
+        ext = path.suffix.lower()
+        if ext in cls._ext_registry:
+            return super().__new__(cls._ext_registry[ext])
+
+        # --- MIME detection ---
+        mime = cls._detect_mime(path)
+        if mime:
+            for pattern, subclass in cls._mime_registry.items():
+                if mime.startswith(pattern):
+                    return super().__new__(subclass)
+
+        return super().__new__(cls)
+
+    @auto_doc(AUTO_DOC_HEAD)
+    def __init__(self, p: str | Path | None = None):
+        self.path = Path(p) if p else None
+
+    # --- MIME detection ---
+    @staticmethod
+    @auto_doc(AUTO_DOC_HEAD)
+    def _detect_mime(path: Path) -> str | None:
+        try:
+            import magic  # optional
+            return magic.from_file(str(path), mime=True)
+        except Exception:
+            mime, _ = mimetypes.guess_type(path)
+            return mime
+
+    # --- Registration decorators ---
+    @classmethod
+    @auto_doc(AUTO_DOC_HEAD)
+    def register_mime(cls, pattern: str):
+        def decorator(subclass):
+            cls._mime_registry[pattern] = subclass
+            return subclass
+        return decorator
+
+    @classmethod
+    @auto_doc(AUTO_DOC_HEAD)
+    def register_ext(cls, *exts: str):
+        def decorator(subclass):
+            for e in exts:
+                cls._ext_registry[e.lower()] = subclass
+            return subclass
+        return decorator
+
+    @classmethod
+    @auto_doc(AUTO_DOC_HEAD)
+    def register_folder(cls, predicate):
+        def decorator(subclass):
+            cls._folder_registry.append((subclass, predicate))
+            return subclass
+        return decorator
+
+    # --- Delegation & Utilities ---
+    @auto_doc(AUTO_DOC_HEAD)
+    def __getattr__(self, name):
+        if self.path and hasattr(self.path, name):
+            return getattr(self.path, name)
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+
+    @auto_doc(AUTO_DOC_HEAD)
+    def __truediv__(self, other):
+        return File(self.path / other)
+
+    @auto_doc(AUTO_DOC_HEAD)
+    def __rtruediv__(self, other):
+        return File(Path(other) / self.path)
+
+    @auto_doc(AUTO_DOC_HEAD)
+    def __eq__(self, other):
+        if isinstance(other, File):
+            return self.path == other.path
+        return self.path == Path(other)
+
+    @auto_doc(AUTO_DOC_HEAD)
+    def __str__(self):
+        return str(self.path) if self.path else "<no path>"
+
+    @auto_doc(AUTO_DOC_HEAD)
+    def __repr__(self):
+        return f"{type(self).__name__}({self.path!r})"
+
+    @auto_doc(AUTO_DOC_HEAD)
+    def __fspath__(self):
+        return str(self.path)
+
+    @auto_doc(AUTO_DOC_HEAD)
+    def output(self) -> str:
+        if not self.path:
+            return "[red]No path set[/red]"
         result = self.path.name
         if self.path.is_dir():
-            result = '[blue bold]' + result + '[/blue bold]'
+            result = f"[blue bold]{result}[/blue bold]"
         return result
 
+    @auto_doc(AUTO_DOC_HEAD)
     def info(self):
+        if not self.path:
+            return None
         return file_info(str(self.path.resolve()))
 
+    @auto_doc(AUTO_DOC_HEAD)
     def mime(self):
+        if not self.path:
+            return None
         return file_info(str(self.path.resolve()))
 
-class SrcFile(File):
+@auto_class_doc(AUTO_DOC_HEAD)
+class Folder(File):
+    def list(self):
+        return [File(p) for p in self.path.iterdir()]
+
+    def tree(self, depth: int = 2):
+        def _walk(p, d):
+            if d < 0: return
+            for f in p.iterdir():
+                print('  ' * (depth-d) + f.name)
+                if f.is_dir():
+                    _walk(f, d-1)
+        _walk(self.path, depth)
+
+@File.register_folder(lambda p: (p / "__init__.py").exists())
+class PythonPackage(Folder):
+    def info(self):
+        return f"{self.path} (Python package)"
+
+@File.register_folder(lambda p: (p / "Makefile").exists() or any(p.glob("*.c")))
+class CProjectDir(Folder):
+    def info(self):
+        return f"{self.path} (C project directory)"
+
+# Text / Source / Python / C Files
+
+@File.register_mime("text/")
+class TextFile(File):
+    def read_lines(self) -> list[str]:
+        return self.path.read_text(errors='ignore').splitlines() if self.path else []
+
+    def write_lines(self, lines: list[str]):
+        self.path.write_text('\n'.join(lines))
+
+    def sed(self, inplace=False)-> bool:
+        pass
+
+@File.register_ext(".cfg")
+class ConfigFile(TextFile):
+    """Simple key=value config file handler."""
+    
+    def read(self) -> dict[str, str]:
+        data = {}
+        if not self.path or not self.path.exists(): 
+            return data
+        for line in self.path.read_text().splitlines():
+            line = line.split('#', 1)[0].strip()  # strip comments
+            if not line: 
+                continue
+            key, sep, value = line.partition('=')
+            if sep:
+                data[key.strip()] = value.strip()
+        return data
+
+    def write(self, data: dict[str, str]):
+        lines = [f"{k} = {v}" for k, v in data.items()]
+        self.path.write_text('\n'.join(lines))
+
+class SrcFile(TextFile):
+    """Generic source file."""
     pass
 
+# Python files
+@File.register_ext(".py")
 class PyFile(SrcFile):
+    def pick(self):
+        """ Prompt the user to choose a Python `*.py` file. """
+        self.path = choose_file(
+            initial_path=cwd(),
+            filters=[('Python file', '*.py')]
+        )
+        if self.path:
+            info(f'User chose {self.path}')
+        else:
+            info("User cancelled.")
+
+    def is_in_package(self) -> bool:
+        return (self.path.parent / '__init__.py').exists()
+
     @cwd_mover()
-    def run(self):
-        cd(self.path.parent.parent)
-        process = run_cmd([sys.executable, '-m', f'{self.path.parent.name}.{self.path.stem}'])
-        cd(PyFile.run._CWD)
+    def run(self) -> subprocess.CompletedProcess | None:
+        if not self.path: 
+            self.pick()
+        if not self.path:
+            return None
+
+        if self.is_in_package():
+            debug(f'File {str(self.path)} is in a package folder.')
+            cd(self.path.parent.parent)
+            debug(f'Changed to directory {cwd()}')
+            process = run_cmd([
+                sys.executable,
+                '-m',
+                f'{self.path.parent.name}.{self.path.stem}'
+            ])
+        else:
+            process = run_cmd([sys.executable, str(self.path)])
+
+        cd(self.run._CWD)
+        debug(f'Changed back to {cwd()}')
         return process
 
-class Folder(File):
-    pass
+# C source files
+@File.register_ext(".c", ".h")
+class CFile(SrcFile):
+    """Represents a C source or header file."""
+    def compile(self, output: str | None = None) -> subprocess.CompletedProcess:
+        """Compile the C file with gcc."""
+        if output is None:
+            output = self.path.stem
+        return run_cmd(["gcc", str(self.path), "-o", str(output)])
+
+
+class TempFile(File):
+    def __enter__(self):
+        self.path = Path(tempfile.mktemp())
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        try: self.path.unlink()
+        except FileNotFoundError: pass
+
+class TempFolder(Folder):
+    def __enter__(self):
+        self.path = Path(tempfile.mkdtemp())
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        shutil.rmtree(self.path, ignore_errors=True)
+
+class ExecutableFile(File):
+    def run(self, args: list[str] = None) -> subprocess.CompletedProcess:
+        if args is None: args = []
+        return subprocess.run([str(self.path)] + args, capture_output=True, text=True)
 
 if __name__ == '__main__':
-    print(F"Running {Path(__file__).name}")
+    print(f"Running {Path(__file__).name}")
+    from .where import DEBUG, TESTING
+    print(f'{TESTING=}')
+    print(f'{DEBUG=}')
+    print(f'{debug=}')
+    if TESTING:
+        debug('Running a PyFile...')
+        p = PyFile().run()
+        if not p:
+            print("User cancelled.")
+            # exit()
+        else:
+            code_color = 'red' if p.returncode else 'green'
+            output = StringIO()
+            rp(f"""
+    [cyan]Called process results[/cyan]:
+    Return code: [{code_color}]{p.returncode}[/{code_color}]""", file=output)
+            if p.stderr:
+                rp(f"""
+    {('Error output: \n' + p.stderr + '\n') if p.stderr else ''}""", file=output)
+            if p.stdout:
+                rp(f"""
+    {('Standard output: \n' + p.stdout + '\n') if p.stdout else ''}""", file=output)
+            print(output.getvalue().strip())
+            print()
+        examples = [
+    "/etc/hosts",
+    "setup.py",
+    "main.c",
+    "/usr/share/pixmaps/debian-logo.png",
+    "/usr/lib/python3.12",
+    "/usr/src/linux",
+]
+        
+        for e in examples:
+            f = File(e)
+            print(f"{f.path!s:40} -> {type(f).__name__}")
+

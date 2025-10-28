@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -32,14 +32,7 @@ details here.
 
 """
 
-
-
 from datetime import datetime
-
-# if __package__:
-#     from .where import *
-# else:
-#     from where import *
 
 from pygnition.where import *
 
@@ -117,9 +110,11 @@ GLOBE_MERIDIANS = f"🌐{LEADING_SPACE}"
 SATURN_PICT = f"🪐{LEADING_SPACE}"
 WORLD_MAP_PICT = f"🗺️{LEADING_SPACE}"
 
-def current_clock_pict(dt: datetime) -> str:
+@auto_doc(AUTO_DOC_HEAD)
+def current_clock_pict(dt: datetime # time to find the emoji for
+                      ) -> str:     # the emoji
     """
-    Return the clock emoji from CLOCK_PICTS most closely representing the given datetime.
+    Return the clock emoji from `CLOCK_PICTS` most closely representing the given `datetime` parameter.
     """
     hour = dt.hour % 12
     if hour == 0:

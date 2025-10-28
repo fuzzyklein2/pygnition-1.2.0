@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -30,27 +30,28 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
+## [GitHub]({get_upstream_url()})
+
 """
-
-
 
 from configparser import ConfigParser as CP
 from pathlib import Path
-
-# from rich import print as rp
-
-# if __package__:
-#     from .arguments import parse_arguments
-#     from .stdinput import *
-# else:
-#     from arguments import parse_arguments
-#     from stdinput import *
 
 from .arguments import parse_arguments
 from .constants import NEWLINE
 from .picts import WARNING_PICT
 from .stdinput import get_piped_input
 from .where import USER_PREFS_DIR
+
+def config(p:str|Path)->dict:
+    """ Simple function to just read a `*.cfg` file with no sections. """
+    p = Path(p)
+    lines = read_lines(p)
+    d = dict()
+    for l in lines:
+        k, _, v = l.partition('=')
+        d[k.strip()] = v.strip()
+    return d
 
 class Configuration():
     def __init__(self, files:list):
@@ -98,10 +99,10 @@ def configure(files:list|None=None):
 if __name__ == '__main__':
     from pprint import pprint as pp
     
-    from .where import PROGRAM_NAME, PROGRAM_PATH
+    # from .interpreters import PROJECT_NAME
     
-    print(f'Running {PROGRAM_NAME}')
-    print(f'Program path: {PROGRAM_PATH}')
+    print(f'Running {__file__}')
+    # print(f'Program path: {PROGRAM_PATH}')
     # print("Running `configure.py` ...")
     config = configure(USER_PREFS_DIR / 'config.ini')
     pp(config.as_dict())

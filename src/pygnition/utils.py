@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -80,3 +80,16 @@ def color_str(color, s:str) -> str:
         return buffer.getvalue().strip()
     else:
         return f'[red]ERROR![end] Invalid color!'
+
+@auto_doc()
+def get_full_name() -> str:
+    """Return the current user's full name, falling back to username if not set."""
+    try:
+        pw = pwd.getpwuid(os.getuid())
+        full_name = pw.pw_gecos.split(',')[0].strip()
+        if full_name:
+            return full_name
+    except Exception:
+        pass
+    # Fallbacks
+    return os.getenv("USER") or os.getenv("LOGNAME") or "Unknown User"

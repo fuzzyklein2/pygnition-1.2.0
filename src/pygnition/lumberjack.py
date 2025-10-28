@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -107,7 +107,9 @@ def stop(message):
     if RUNNING_CLI:
         exit(1)
 
+# __all__ = [ 'debug', 'error', 'info', 'stop', 'warn' ]
+
 if __name__ == '__main__':
-    setuplog(USER_DATA_DIR / f'logs/{PROJECT_NAME}.log',
+    setuplog(USER_DATA_DIR / f'logs/{PACKAGE_NAME}.log',
              level=logging.DEBUG)
-    debug(f'Testing {PROJECT_NAME}')
+    debug(f'Testing {PACKAGE_NAME}')

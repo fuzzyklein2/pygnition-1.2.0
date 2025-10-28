@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -30,26 +30,10 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
+## [GitHub]({get_upstream_url()})
+
 """
 
-
-
-# def normalize(s: str) -> str:
-#     """Trim and lowercase a string for comparison."""
-#     return s.strip().lower()
-
-
-# def is_affirmative(s: str) -> bool:
-#     """Return True if input matches a known affirmative response."""
-#     s = normalize(s)
-#     return any(s == word or s.startswith(word) for word in AFFIRMATIVES)
-
-
-# def is_negative(s: str) -> bool:
-#     """Return True if input matches a known negative response."""
-#     s = normalize(s)
-#     return any(s == word or s.startswith(word) for word in NEGATIVES)
-    
 AFFIRMATIVES = [
     "y",
     "yes",
@@ -96,45 +80,24 @@ NEGATIVES = [
     "stop"
 ]
 
+@auto_doc(AUTO_DOC_HEAD)
 def normalize(s: str) -> str:
     """Trim and lowercase a string for comparison."""
     return s.strip().lower()
 
 
+@auto_doc(AUTO_DOC_HEAD)
 def is_affirmative(s: str) -> bool:
     """Return True if input matches a known affirmative response."""
     s = normalize(s)
     return any(s == word or s.startswith(word) for word in AFFIRMATIVES)
 
 
+@auto_doc(AUTO_DOC_HEAD)
 def is_negative(s: str) -> bool:
     """Return True if input matches a known negative response."""
     s = normalize(s)
     return any(s == word or s.startswith(word) for word in NEGATIVES)
 
-# def prompt_yes_no(prompt: str, default: str | None = None) -> bool:
-#     """
-#     Prompt the user for a yes/no answer and return True for yes, False for no.
-
-#     Parameters:
-#         prompt: The text to show to the user.
-#         default: If provided ("y" or "n"), hitting enter will select this.
-
-#     Returns:
-#         True if affirmative, False if negative.
-#     """
-#     if default:
-#         prompt_text = f"{prompt} [{'Y' if default.lower() == 'y' else 'y'}/{'N' if default.lower() == 'n' else 'n'}]: "
-#     else:
-#         prompt_text = f"{prompt} [y/n]: "
-
-#     while True:
-#         reply = input(prompt_text)
-#         if not reply and default:
-#             reply = default
-#         if is_affirmative(reply):
-#             return True
-#         elif is_negative(reply):
-#             return False
-#         else:
-#             print("Please respond with yes or no.")
+if __name__ == '__main__':
+    print(f'Running {__file__}')

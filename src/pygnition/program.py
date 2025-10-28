@@ -38,7 +38,7 @@ import atexit
 from rich import print as rp
 
 from .lumberjack import debug, error, info, warn, stop
-from ._metadata import PROJECT_NAME as PROGRAM_NAME
+from ._metadata import PACKAGE_NAME as PROGRAM_NAME
 from .picts import CHECK_PICT, CONSTRUCTION_PICT, WARNING_PICT, WAVE_PICT
 from .settings import Settings
 from .where import USER_DATA_DIR

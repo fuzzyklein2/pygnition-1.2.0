@@ -25,17 +25,9 @@ RUNNING_IN_JUPYTER = False
 RUNNING_GATEWAY = False
 
 # ---------------------------
-# Runtime options
-# ---------------------------
-DEBUG = False
-VERBOSE = False
-WARNINGS = False
-TESTING = False
-
-# ---------------------------
 # Program variables
 # ---------------------------
-PROGRAM_NAME = "UNKNOWN"
+# PROGRAM_NAME = "UNKNOWN"
 PROGRAM_PATH = None
 CALLING_MODULE = None
 
@@ -83,17 +75,3 @@ if CALLING_MODULE:
         # Running in interactive console or notebook
         PROGRAM_PATH = None
 
-# if not PROGRAM_PATH:
-#     PROJECT_DIR = Path.cwd()
-# else:
-#     PROJECT_DIR = PROGRAM_PATH.parent.parent.parent
-
-# if RUNNING_CLI or RUNNING_GATEWAY:
-#     PROJECT_DIR = PROJECT_DIR.parent
-
-# PROGRAM_NAME = PROJECT_DIR.stem.split('-')[0]
-
-# ---------------------------
-# Project and user directories
-# ---------------------------
-# PROJECT_NAME = PROGRAM_NAME

@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -29,6 +29,8 @@ args = parse_arguments()
 
 You can include implementation notes, dependencies, or version-specific
 details here.
+
+## [GitHub]({get_upstream_url()})
 
 """
 

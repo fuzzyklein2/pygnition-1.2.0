@@ -7,99 +7,33 @@ MODULE_NAME = Path(__file__).stem
 from datetime import datetime
 from importlib import resources
 from pathlib import Path
+from pprint import pprint as pp
 import subprocess
 import sys
 
-from ._data_tools import is_valid_data_line
-from ._imports import pkg_path
+from ._data_tools import get_data, is_valid_data_line
+from ._git_tools import get_upstream_url
+from ._imports import import_chain, pkg_path
 from ._last_saved_date import last_saved_datetime
 from ._read_lines import read_lines
 
-PROJECT_NAME = "pygnition"  # your package name
+PACKAGE_NAME = __package__
+# pp(import_chain())
 
-# def pkg_path() -> Path:
-#     """
-#     Return the root path of this installed package.
-#     Raises RuntimeError if the package is not importable.
-#     """
-#     # Detect Jupyter (just for reference, though it's not critical anymore)
-#     def in_jupyter() -> bool:
-#         try:
-#             from IPython import get_ipython
-#             return get_ipython() is not None
-#         except Exception:
-#             return False
-
-#     # --- Verify package is importable ---
-#     try:
-#         __import__(PROJECT_NAME)
-#     except ImportError:
-#         raise RuntimeError(
-#             f"Package '{PROJECT_NAME}' is not importable. "
-#             "Make sure it’s installed (e.g. `pip install -e .`) "
-#             "and available in this environment."
-#         )
-
-#     # --- Return the installed package root ---
-#     return Path(resources.files(PROJECT_NAME))
-
-# def pkg_path() -> Path
-#     if INTERPETER == Interpreters.JUPYTER:
-        
-#     if __package__: return resources.files(f'{PROJECT_NAME}')
-#     else: return Path(__file__).parent
-
-PACKAGE_PATH = pkg_path(PROJECT_NAME)
-VERSION = '1.2.0b'
-AUTHOR = 'Russell Klein'
-
-# def git_repo_last_commit_datetime() -> datetime | None:
-#     try:
-#         result = subprocess.run(
-#             ["git", "log", "-1", "--format=%ct"],
-#             capture_output=True, text=True, check=True
-#         )
-#         timestamp = int(result.stdout.strip())
-#         return datetime.fromtimestamp(timestamp)
-#     except subprocess.CalledProcessError:
-#         return None
-
-# def last_saved_datetime(path: str | Path, repo_wide: bool = False) -> datetime | None:
-#     """
-#     Return the datetime of the last Git commit for a file or repo.
-#     Falls back to filesystem modification time if not committed yet.
-
-#     :param path: Path to file or directory.
-#     :param repo_wide: If True, use the latest commit in the repo.
-#     :return: datetime object or None if unavailable.
-#     """
-#     path = Path(path).resolve()
-
-#     # --- 1. Try git commit timestamp ---
-#     try:
-#         args = ["git", "log", "-1", "--format=%ct"]
-#         if not repo_wide:
-#             args.append(str(path))
-#         result = subprocess.run(args, capture_output=True, text=True, check=True)
-#         ts = result.stdout.strip()
-#         if ts:
-#             return datetime.fromtimestamp(int(ts))
-#     except subprocess.CalledProcessError:
-#         pass  # not in git or not committed
-
-#     # --- 2. Fall back to file modification time ---
-#     try:
-#         return datetime.fromtimestamp(path.stat().st_mtime)
-#     except FileNotFoundError:
-#         return None
-
-LAST_SAVED_DATE = last_saved_datetime(__file__).date()
+# PROJECT_NAME = PACKAGE_NAME  # your package name
+PACKAGE_PATH = pkg_path(PACKAGE_NAME)
+# print(PROJECT_NAME)
 PROJECT_DATA_DIR = PACKAGE_PATH / 'data'
-DESCRIPTION = (PROJECT_DATA_DIR / 'description.txt').read_text()
+VERSION = get_data(PROJECT_DATA_DIR, 'version')
+# print(VERSION)
+AUTHOR = get_data(PROJECT_DATA_DIR, 'author')
+LAST_SAVED_DATE = last_saved_datetime(__file__).date()
+DESCRIPTION = get_data(PROJECT_DATA_DIR, 'description')
 REQ_FILE = PROJECT_DATA_DIR / 'requirements.txt'
 if not REQ_FILE.exists(): REQ_FILE = PROJECT_DATA_DIR / 'requirements.in'
 if not REQ_FILE.exists(): REQ_FILE.touch()
 REQUIREMENTS = '\n'.join([f'* {s}' for s in read_lines(REQ_FILE) if is_valid_data_line(s)])
+
 
 __doc__ = f"""Provides metadata for the project, notably the `PROJECT_NAME`.
 
@@ -125,6 +59,8 @@ args = parse_arguments()
 
 You can include implementation notes, dependencies, or version-specific
 details here.
+
+## [GitHub]({get_upstream_url()})
 
 """
 

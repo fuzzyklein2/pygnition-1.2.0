@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -60,93 +60,6 @@ RUNNING_CONSOLE = INTERPRETER in { Interpreters.CONSOLE,
                                    Interpreters.IPYTHON
                                  }
 
-# # ---------------------------
-# # Program environment
-# # ---------------------------
-# RUNNING_CLI = False
-# RUNNING_CONSOLE = False
-# RUNNING_IN_JUPYTER = False
-# RUNNING_GATEWAY = False
-
-# # ---------------------------
-# # Runtime options
-# # ---------------------------
-# DEBUG = False
-# VERBOSE = False
-# WARNINGS = False
-# TESTING = False
-
-# # ---------------------------
-# # Program variables
-# # ---------------------------
-# PROGRAM_NAME = "UNKNOWN"
-# PROGRAM_PATH = None
-# CALLING_MODULE = None
-
-# # ---------------------------
-# # Determine interpreter
-# # ---------------------------
-# CALLERS = import_chain()
-
-# if not sys.argv[0]: # Running console
-#     RUNNING_CONSOLE = True
-#     INTERPRETER = Interpreters.CONSOLE
-#     CALLING_MODULE = None
-
-# if "GATEWAY_INTERFACE" in os.environ: # Maybe, maybe not. CGI :/
-#     RUNNING_GATEWAY = True
-#     INTERPRETER = Interpreters.GATEWAY
-#     CALLING_MODULE = '__main__'
-
-# elif "ipykernel" in sys.modules: # Jupyter Lab
-#     RUNNING_IN_JUPYTER = True
-#     INTERPRETER = Interpreters.JUPYTER
-#     CALLING_MODULE = first_after_last_digits(CALLERS)
-
-# elif "IPython" in sys.modules: # ipython
-#     RUNNING_CONSOLE = True
-#     INTERPRETER = Interpreters.IPYTHON
-#     CALLING_MODULE = list(filter(lambda s: not (s.startswith('IPython') or s.startswith('traitlets') or s == 'ipython3')))[0]
-
-# elif sys.stdin.isatty(): # CLI
-#     if not RUNNING_CONSOLE:
-#         RUNNING_CLI = True
-#         # RUNNING_CONSOLE = True
-#         INTERPRETER = Interpreters.CLI
-#         CALLING_MODULE = '__main__'
-        
-# else:
-#     # fallback
-#     RUNNING_CLI = True
-#     INTERPRETER = Interpreters.UNKNOWN
-
-# if CALLING_MODULE:
-#     try:
-#         PROGRAM_PATH = Path(sys.modules[CALLING_MODULE].__file__).resolve()
-#     except (KeyError, AttributeError):
-#         # Running in interactive console or notebook
-#         PROGRAM_PATH = None
-
-# if not PROGRAM_PATH:
-#     PROJECT_DIR = Path.cwd()
-# else:
-#     PROJECT_DIR = PROGRAM_PATH.parent.parent.parent
-
-# # if RUNNING_CLI or RUNNING_GATEWAY:
-# #     PROJECT_DIR = PROJECT_DIR.parent
-
-# PROGRAM_NAME = PROJECT_DIR.stem.split('-')[0]
-
-# # ---------------------------
-# # Project and user directories
-# # ---------------------------
-# PROJECT_NAME = PROGRAM_NAME
-
-# # ---------------------------
-# # Ensure that we have a PYGNITION_LOCATION environment variable for PyGTK
-# # and other scripts that require `python3` (3.12 at present), not >=3.13
-# # ---------------------------
-# PYGNITION_DIRECTORY = Path(getsourcefile(Interpreters)).parent.parent
 
 try:
     from pygnition.ignition import *
@@ -158,9 +71,16 @@ except (ImportError, ModuleNotFoundError) as e:
         print(f'Pygnition import failed!')
 
 PROJ_DATA = PACKAGE_PATH / 'data'
-USER_DATA_DIR = Path.home() / f".{PROJECT_NAME}"
+USER_DATA_DIR = Path.home() / f".{PACKAGE_NAME}"
 USER_PREFS_DIR = USER_DATA_DIR / "etc"
 
+# ---------------------------
+# Runtime options
+# ---------------------------
+DEBUG = False
+VERBOSE = False
+WARNINGS = True
+TESTING = False
 # ---------------------------
 # Command line flags
 # ---------------------------
@@ -169,7 +89,7 @@ TESTING = bool({'-t', '--test'}.intersection(sys.argv))
 DEBUG = bool({'-d', '--debug'}.intersection(sys.argv)) or TESTING
 VERBOSE = bool({'-v', '--verbose'}.intersection(sys.argv)) or DEBUG
 
-@auto_doc()
+@auto_doc(AUTO_DOC_HEAD)
 def display_where_info():
     """Test this module from any project directory that imports it."""
     print(f"Running: {PROGRAM_NAME}")
@@ -181,25 +101,6 @@ def display_where_info():
     print(f"Interpreter: {INTERPRETER.name}")
     print(f"RUNNING_CLI={RUNNING_CLI}, RUNNING_IN_JUPYTER={RUNNING_IN_JUPYTER}, "
           f"RUNNING_CONSOLE={RUNNING_CONSOLE}, RUNNING_GATEWAY={RUNNING_GATEWAY}")
-
-# if not RUNNING_CLI and not RUNNING_GATEWAY:
-#     display_where_info()
-
-# ---------------------------
-# Optional: display info if testing
-# ---------------------------
-
-# def cwd_mover(current_cwd=None):
-#     """
-#     Decorator that attaches the current working directory to the decorated function
-#     as the attribute `_CWD`.
-
-#     If no directory is provided, it captures the cwd at decoration time.
-#     """
-#     def decorator(func):
-#         func._CWD = Path(current_cwd) if current_cwd else Path.cwd()
-#         return func
-#     return decorator
 
 @auto_doc()
 def cwd_mover(current_cwd=None):

@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -30,6 +30,8 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
+## [GitHub]({get_upstream_url()})
+
 """
 
 from argparse import ArgumentParser as AP
@@ -39,6 +41,7 @@ import sys
 
 # import pandas as pd
 
+from .interpreters import RUNNING_CLI
 from .where import PROJ_DATA
 
 EPILOG = (PROJ_DATA / 'epilog.txt').read_text()
@@ -109,7 +112,12 @@ def parse_arguments(arg_file:Path|str,
     for option in STD_OPTS:
         ap.add_argument(*option[0], **option[1])
 
-    return ap.parse_args(sys.argv[1:])
+    if RUNNING_CLI:
+        return ap.parse_args(sys.argv[1:])
+    elif RUNNING_GATEWAY:
+        return
+    else:
+        return ap.parse_args(shlex.split(input('Enter command line options and arguments: ')))
 
 class Arguments():
     def __init__(self):
@@ -131,7 +139,7 @@ if __name__ == '__main__':
     from pprint import pprint as pp
     ARGS_CSV_FILE = PROJ_DATA / 'std_opts.csv'
     ARGS = parse_arguments(ARGS_CSV_FILE,
-                           PROJECT_NAME,
+                           PACKAGE_NAME,
                            VERSION,
                            DESCRIPTION,
                            EPILOG)

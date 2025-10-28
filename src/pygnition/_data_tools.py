@@ -14,3 +14,10 @@ def is_valid_data_line(s:str)->bool:
     if s.startswith('#') or s.isspace() or not s: return False
     return True
 
+def get_data(p: Path, s: str) -> str:
+    """ Get the contents of the file p / s.txt """
+    data_file = p / f'{s}.txt'
+    try:
+        return data_file.read_text()
+    except FileNotFoundError:
+        return ''

@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -65,3 +65,8 @@ def _(obj:object, lang:str='python')->None:
     display_source(inspect.getsource(obj))
 
 # Get the path of the currently running Jupyter notebook.
+
+@auto_doc('Move to the project working directory')
+def find_proj_root():
+    if cwd().stem == 'notebooks': cd('../')
+    pwd()

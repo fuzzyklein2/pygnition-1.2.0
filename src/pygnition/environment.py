@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -30,16 +30,18 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
-"""
+## [GitHub]({get_upstream_url()})
 
+"""
 
 import os
 from pprint import pformat
 
-from ._metadata import PROJECT_NAME
+from ._metadata import PACKAGE_NAME as PROJECT_NAME
 from .utils import *
 
 class Environment(dict):
+    @auto_doc(AUTO_DOC_HEAD)
     def __init__(self, prefix=PROJECT_NAME.upper()+'_', *args, **kwargs):
         super().__init__(self, *args, **kwargs)
         
@@ -55,7 +57,7 @@ class Environment(dict):
         return pformat(self)
 
 if __name__ == '__main__':
-    print(f'{PROGRAM_NAME=}')
+    print(f'{PACKAGE_NAME=}')
     print(f"""Environtment variables:
 
 {pformat(Environment())}

@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -30,6 +30,8 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
+## [GitHub]({get_upstream_url()})
+
 """
 
 
@@ -42,31 +44,43 @@ from pathlib import Path, PosixPath, WindowsPath
 from subprocess import run
 
 from rich import print as rp
+from rich.columns import Columns
+from rich.console import Console
 
 from ._auto_doc import auto_doc
 from .colors import DIR_BLUE, DIR_GREEN
 from .picts import ASK_PICT, DEBUG_PICT, FOLDER_PICT, INFO_PICT, NEWLINE
 
-@auto_doc("Return the current working directory.")
+@auto_doc(AUTO_DOC_HEAD)
 def cwd():
+    """Return the current working directory."""
     return Path.cwd()
 
-@auto_doc("Print `cwd()` and return it.")
+@auto_doc(AUTO_DOC_HEAD)
 def pwd():
+    """Print `cwd()` and return it."""
     CWD = cwd()
     rp(f'{FOLDER_PICT}Current working directory: [{DIR_BLUE}]{CWD}[end]')
-    return CWD
+    # return CWD
 
-@auto_doc("Change the current working directory.")
+@auto_doc(AUTO_DOC_HEAD)
 def cd(p:str|Path)->Path|None:
+    """Change the current working directory."""
+    p = Path(p)
     if not p.exists():
         warn(f'Directory [green]{str(p)}[end] does not exist!')
     os.chdir(p)
     return p
 
-@auto_doc('Return the (supposedly) "public" members of the given object')
+@auto_doc(AUTO_DOC_HEAD)
+def columnize(L:list[str]):
+    """ Arrange the list of strings into columns. `rich` handles spacing of its color strings. """
+    Console().print(Columns(sorted(public(Path)), expand=True, equal=True))
+
+@auto_doc(AUTO_DOC_HEAD)
 def public(obj)->list:
-    return [s for s in dir(obj) if not s.startswith('_')]
+    """Return the (supposedly) "public" members of the given object."""
+    return sorted([s for s in dir(obj) if not s.startswith('_')])
     
 def yes_or_no(question:str, message=None)->bool:
     if input(f'{(message + NEWLINE) if message else ''}'
@@ -179,3 +193,4 @@ for cls in (Path, PosixPath, WindowsPath):
 def _(s: str, all: bool = False) -> list[Path] | None:
     """Convert the str to a Path and call subdirs(p:Path)."""
     return subdirs(Path(s), all=all)
+
