@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -37,7 +37,7 @@ from pprint import pformat
 
 from rich import print as rp
 
-from .files import is_hidden, is_visible
+from .files.files import is_hidden, is_visible
 from .lumberjack import debug, error, info, stop, warn 
 from .picts import DEBUG_PICT, FOLDER_PICT, GEAR_PICT, LINK_PICT
 from .program import Program, PROGRAM_NAME

@@ -12,7 +12,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PACKAGE_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -64,7 +64,7 @@ if not USER_PREFS_DIR.exists():
     shutil.copytree(PACKAGE_PATH / 'etc', USER_PREFS_DIR)
 CONFIG_FILES = [USER_PREFS_DIR / s for s in os.listdir(USER_PREFS_DIR) if Path(s).suffix in {'.ini', '.cfg'}]
 
-LOG_FILE = USER_DATA_DIR / f'logs/{PROJECT_NAME}.log'
+LOG_FILE = USER_DATA_DIR / f'logs/{PACKAGE_NAME}.log'
 
 # assert(PROJECT_DIR.exists())
 # assert(ARGS_FILE.exists())
@@ -74,7 +74,7 @@ ARGS = None
 if RUNNING_CLI:
     # print(f'Arguments file: {ARGS_FILE}')
     if ARGS_FILE.exists():
-        ARGS = parse_arguments(ARGS_FILE, PROJECT_NAME, VERSION, DESCRIPTION,
+        ARGS = parse_arguments(ARGS_FILE, PACKAGE_NAME, VERSION, DESCRIPTION,
                                (PROJ_DATA / 'epilog.txt').read_text().strip())
                               
 
@@ -162,7 +162,7 @@ Configuration:
 """)
     
 if __name__ == '__main__':
-    debug(f'Running {PROGRAM_NAME}')
+    debug(f'Running {PACKAGE_NAME}')
     debug(f'{type(ARGS)=}')
     debug(f'{dict(CONFIG['DEFAULT'])=}')
     debug(f'''Settings:
