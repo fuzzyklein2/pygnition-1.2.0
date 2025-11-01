@@ -51,12 +51,16 @@ class Folder(File):
         _walk(self.path, depth)
 
 @File.register_folder(lambda p: (p / "__init__.py").exists())
-class PythonPackage(Folder):
+class PyPackage(Folder):
     def info(self):
         return f"{self.path} (Python package)"
 
-@File.register_folder(lambda p: (p / "Makefile").exists() or any(p.glob("*.c")))
+@File.register_folder(lambda p: any(p.glob("*.c")))
 class CProjectDir(Folder):
     def info(self):
         return f"{self.path} (C project directory)"
 
+@File.register_folder(lambda p: (p / 'index.html').exists())
+class WebSiteFolder(Folder):
+    def info(self):
+        return f"{self.path} (C project directory)"

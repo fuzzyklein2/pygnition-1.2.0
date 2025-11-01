@@ -30,8 +30,10 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
-"""
+## [GitHub]({get_upstream_url()})
 
+
+"""
 
 import logging
 import os
@@ -48,7 +50,7 @@ from .interpreters import RUNNING_CLI, RUNNING_GATEWAY
 from pygnition.lumberjack import debug, error, info, setuplog, stop, warn
 from pygnition.stdinput import get_piped_input
 from pygnition.tools import mkdir
-from .where import PROJ_DATA, USER_DATA_DIR, USER_PREFS_DIR
+from .where import DEBUG, PROJ_DATA, TESTING, USER_DATA_DIR, USER_PREFS_DIR, VERBOSE
 
 # breakpoint()
 INPUT = get_piped_input()
@@ -76,7 +78,8 @@ if RUNNING_CLI:
     if ARGS_FILE.exists():
         ARGS = parse_arguments(ARGS_FILE, PACKAGE_NAME, VERSION, DESCRIPTION,
                                (PROJ_DATA / 'epilog.txt').read_text().strip())
-                              
+
+# print(str(ARGS_FILE))
 
 # assert(ARGS)
 
@@ -130,8 +133,10 @@ class Settings(SimpleNamespace):
     def __init__(self, *args, **kwargs):
         super().__init__(**SETTINGS)
         self.config_files = CONFIG_FILES
-        if self.testing: self.debug = True
+        if TESTING: self.debug = True
+        else: self.debug = DEBUG
         if self.debug: self.verbose = True
+        else: self.verbose = VERBOSE
 
     def dumps(self):
         d = {k: v for k, v in vars(ARGS).items() if k != 'args'} if ARGS else 'None'

@@ -34,6 +34,7 @@ details here.
 
 
 from functools import singledispatch
+import inspect
 
 from IPython.display import display, Markdown
 

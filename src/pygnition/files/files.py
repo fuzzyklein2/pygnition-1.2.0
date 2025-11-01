@@ -75,13 +75,14 @@ class File:
 
         # --- Folder detection ---
         if path.is_dir():
+            from .folders import Folder  # delayed import to avoid circulars
             for subclass, predicate in cls._folder_registry:
                 try:
                     if predicate(path):
-                        return super().__new__(subclass)
+                        return subclass(path)  # ✅ calls __init__
                 except Exception:
                     continue
-            return super().__new__(Folder)
+            return Folder(path)  # ✅ also calls __init__
 
         # --- Extension detection ---
         ext = path.suffix.lower()
@@ -102,8 +103,8 @@ class File:
         self.path = Path(p) if p else None
 
     # --- MIME detection ---
+    # @auto_doc(AUTO_DOC_HEAD)
     @staticmethod
-    @auto_doc(AUTO_DOC_HEAD)
     def _detect_mime(path: Path) -> str | None:
         try:
             import magic  # optional
@@ -113,16 +114,16 @@ class File:
             return mime
 
     # --- Registration decorators ---
+    # @auto_doc(AUTO_DOC_HEAD)
     @classmethod
-    @auto_doc(AUTO_DOC_HEAD)
     def register_mime(cls, pattern: str):
         def decorator(subclass):
             cls._mime_registry[pattern] = subclass
             return subclass
         return decorator
 
+    # @auto_doc(AUTO_DOC_HEAD)
     @classmethod
-    @auto_doc(AUTO_DOC_HEAD)
     def register_ext(cls, *exts: str):
         def decorator(subclass):
             for e in exts:
@@ -130,8 +131,8 @@ class File:
             return subclass
         return decorator
 
+    # @auto_doc(AUTO_DOC_HEAD)
     @classmethod
-    @auto_doc(AUTO_DOC_HEAD)
     def register_folder(cls, predicate):
         def decorator(subclass):
             cls._folder_registry.append((subclass, predicate))
@@ -181,7 +182,7 @@ class File:
         return result
 
     @auto_doc(AUTO_DOC_HEAD)
-    def info(self, path: str, mime: bool = False, encoding: bool = False) -> str:
+    def info(self, mime: bool = False, encoding: bool = False) -> str:
         """
         Return type information for a file, similar to the `file` command.
     
@@ -196,7 +197,7 @@ class File:
         else:
             ms = magic.Magic()
     
-        return ms.from_file(str(Path(path)))
+        return ms.from_file(str(Path(self.path)))
         
     @auto_doc(AUTO_DOC_HEAD)
     def is_hidden(self, p:str|Path) -> bool:
@@ -206,19 +207,24 @@ class File:
     def is_visible(self, p:str|Path)->bool:
         return not is_hidden(p)
     
-    @auto_doc(AUTO_DOC_HEAD)
-    def info(self):
-        if not self.path:
-            return None
-        return file_info(str(self.path.resolve()))
+    # @auto_doc(AUTO_DOC_HEAD)
+    # def info(self):
+    #     if not self.path:
+    #         return None
+    #     return file_info(str(self.path.resolve()))
 
     @auto_doc(AUTO_DOC_HEAD)
     def mime(self):
         if not self.path:
             return None
-        return file_info(str(self.path.resolve()))
+        return self.info()
 
 # Text / Source / Python / C Files
+
+@File.register_folder(lambda p: not p.exists())
+class MissingPath(File):
+    def describe(self):
+        return f"{self.path} (missing)"
 
 
 if __name__ == '__main__':

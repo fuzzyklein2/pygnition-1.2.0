@@ -30,16 +30,20 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
-"""
+## [GitHub]({get_upstream_url()})
 
+
+"""
 
 import argparse
 from argparse import ArgumentParser as AP
 from cmd import Cmd
 import logging
 from pathlib import Path
+from pprint import pp
 import shlex
 import shutil
+from types import SimpleNamespace
 
 from pygnition.arguments import get_args
 from pygnition.configure import configure
@@ -52,27 +56,27 @@ from pygnition.where import PROJ_DATA, USER_PREFS_DIR
 
 class Driver(Cmd, Program):
 
-    class Command(Settings):
+    class Command(SimpleNamespace):
         @auto_doc("Initialize the `Command` object.")
         def __init__(self, name, line, *args, **kwargs):
             # self.driver = driver
             super().__init__(*args, **kwargs)
             self.cmd_name = name
             self.log = logging.getLogger(name)
-
+            # self.log.critical(f'{self.app_dir}')
 
         def run(self):
             debug(f'Running the {self.cmd_name} command ...')
             
     def __init__(self, *args, **kwargs):
         Cmd.__init__(self)
-        Program.__init__(self)
+        Program.__init__(self, *args, **kwargs)
         self.current_cmd = None
 
     @auto_doc("Parse the command line as if it were actually a command line.")
     def get_opts(self, name:str, line:str)->argparse.Namespace|None:
         line = shlex.split(line)
-        OPTS_FILE = self.app_dir / f'{name.lstrip('do_')}_opts.csv'
+        OPTS_FILE = self.app_dir / 'data' / f'{name.lstrip('do_')}_opts.csv'
         options = list()
         if OPTS_FILE.exists():
             options = get_args(OPTS_FILE)
@@ -101,6 +105,8 @@ class Driver(Cmd, Program):
         settings.update(Environment(self.program_name.upper() + '_' + name.upper() + '_'))
         options = self.get_opts(name, line)
         if options: settings.update(vars(options))
+
+        pp(settings)
         
         getattr(self, f'{name.title()}')(name, line, **settings).run()
 

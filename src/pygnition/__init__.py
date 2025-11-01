@@ -51,3 +51,4 @@ Check the package [reference documentation](docs/markdown/index.md) for details.
 """
 
 CWD = Path.cwd()
+

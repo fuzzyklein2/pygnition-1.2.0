@@ -34,6 +34,7 @@ details here.
 
 """
 
+import os
 import pwd
 
 @auto_doc(AUTO_DOC_HEAD)
