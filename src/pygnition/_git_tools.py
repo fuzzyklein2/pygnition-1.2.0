@@ -37,24 +37,63 @@ def get_git_username():
     except Exception:
         return os.getenv("USER") or "unknown"
 
+import os, re, subprocess
+
 def get_github_username():
+    # 1. Try GitHub CLI (most accurate)
     try:
-        url = subprocess.run(["git", "remote", "get-url", "origin"],
-                             text=True, capture_output=True, check=True).stdout.strip()
+        result = subprocess.run(
+            ["gh", "api", "user", "--jq", ".login"],
+            text=True, capture_output=True, check=True
+        )
+        user = result.stdout.strip()
+        if user:
+            return user
+    except Exception:
+        pass
+
+    # 2. Try from Git remote URL
+    try:
+        url = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            text=True, capture_output=True, check=True
+        ).stdout.strip()
         if "github.com" in url:
             m = re.search(r"github\.com[:/](?P<user>[^/]+)/", url)
             if m:
                 return m.group("user")
     except Exception:
         pass
+
+    # 3. Try from git config github.user
     try:
-        user = subprocess.run(["git", "config", "github.user"],
-                              text=True, capture_output=True, check=True).stdout.strip()
+        user = subprocess.run(
+            ["git", "config", "github.user"],
+            text=True, capture_output=True, check=True
+        ).stdout.strip()
         if user:
             return user
     except Exception:
         pass
-    return get_git_username()
+
+    # 4. Try environment variables
+    for var in ("GITHUB_USER", "GH_USERNAME"):
+        if os.getenv(var):
+            return os.getenv(var)
+
+    # 5. Fallback to author name (last resort)
+    try:
+        user = subprocess.run(
+            ["git", "config", "user.name"],
+            text=True, capture_output=True, check=True
+        ).stdout.strip()
+        if user:
+            return user
+    except Exception:
+        pass
+
+    return None
+
 
 def detect_license_type(lic_text: str) -> str:
     text = lic_text.lower()

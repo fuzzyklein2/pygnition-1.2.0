@@ -37,10 +37,12 @@ details here.
 
 # from argparse import ArgumentParser as AP
 from functools import partial, singledispatch, wraps
+from glob import glob
 # from io import StringIO
 import logging
 import os
 from pathlib import Path, PosixPath, WindowsPath
+import shlex
 from subprocess import run
 
 from rich import print as rp
@@ -89,7 +91,7 @@ def yes_or_no(question:str, message=None)->bool:
         return True
     return False
 
-run_cmd = partial(run, encoding='utf-8', capture_output=True, check=True)
+run_cmd = partial(run, encoding='utf-8', capture_output=True, check=False, shell=True)
 
 @singledispatch
 def chk_cmd(arg):
@@ -98,6 +100,7 @@ def chk_cmd(arg):
 
 @chk_cmd.register
 def _(L:list):
+    # print('Running `chk_cmd(list)`')
     p = run_cmd(L)
     if p.stderr:
         print(p.stderr)
@@ -109,7 +112,23 @@ def _(L:list):
 
 @chk_cmd.register
 def _(s:str) -> None:
-    chk_cmd(s.split())
+    # print('Running `chk_cmd(str)`')
+    # Expand environment vars
+    s = os.path.expandvars(s)
+
+    # Split into args
+    parts = shlex.split(s)
+
+    # Expand wildcards manually (glob)
+    expanded = []
+    for part in parts:
+        if any(ch in part for ch in "*?[]"):
+            expanded.extend(glob(part))
+        else:
+            expanded.append(part)
+
+    # 🔴 Call run_cmd directly — NOT chk_cmd again
+    return run_cmd(expanded)
 
 @singledispatch
 def mkdir(arg):
@@ -194,3 +213,41 @@ def _(s: str, all: bool = False) -> list[Path] | None:
     """Convert the str to a Path and call subdirs(p:Path)."""
     return subdirs(Path(s), all=all)
 
+@auto_doc(AUTO_DOC_HEAD)
+def run_python(src):
+    try:
+        code = compile(src, "<input>", "eval")
+        return eval(code)
+    except SyntaxError:
+        exec(src)
+
+def grep(s: str, f: str) -> str | None:
+    """ Search for `s` in the given `f`iles. """
+    
+    # Expand env vars and globs manually
+    f = os.path.expandvars(f)
+    files = glob(f)
+    if not files:
+        print(f"(no files match {f})")
+        return None
+
+    # Build grep argument list directly
+    cmd = ["grep", "-E", "-n", s, *files]
+#    print("Running:", " ".join(cmd))
+
+    p = run(cmd, encoding="utf-8", capture_output=True)
+    if p.returncode == 0:
+        print(p.stdout, end="")
+    elif p.returncode == 1:
+        print(f"(no matches found for '{s}')")
+    elif p.returncode == 2:
+        print(f"❌ grep error:\n{p.stderr}")
+    return p.stdout or None
+
+def find_def(s: str|obj, f: str) -> str | None:
+    """Search for variable, def, or class definitions matching `s` in file(s) `f`."""
+    if type(s) is not str:
+        s = s.__name__
+    # Build grep argument list directly
+    pattern = f"{s} = |def {s}|class {s}"
+    grep(pattern, f)

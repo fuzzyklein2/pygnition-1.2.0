@@ -111,16 +111,16 @@ def cwd_mover(current_cwd=None):
     Works for standalone functions and class methods.
     """
     def decorator(func):
-        cwd = Path(current_cwd) if current_cwd else Path.cwd()
+        _cwd = Path(current_cwd) if current_cwd else Path.cwd()
 
         @wraps(func)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
         # attach to both, so it can be accessed either way
-        wrapper._CWD = cwd
+        wrapper._CWD = _cwd
         try:
-            func._CWD = cwd
+            func._CWD = _cwd
         except AttributeError:
             pass  # some built-in functions can't be assigned to
 

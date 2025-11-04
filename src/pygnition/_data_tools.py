@@ -1,3 +1,38 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+
+from pygnition import *
+
+MODULE_NAME = Path(__file__).stem
+
+__doc__ = f"""Python IDE for the command line.
+
+========== ⚠️  WARNING! ⚠️  ==========
+This project is currently under construction.
+Stay tuned for updates.
+
+Module: {__package__}.{MODULE_NAME}
+Version: 1.2.0
+Author: Fuzzy Klein
+Date: 2025-11-03
+
+## Description
+
+This module defines the Workshop class.
+
+## Typical Use
+```python
+args = parse_arguments()
+
+## Notes
+
+You can include implementation notes, dependencies, or version-specific
+details here.
+
+## [GitHub](https://github.com/fuzzyklein2/pygnition-1.2.0/)
+
+"""
 def is_valid_data_line(s:str)->bool:
     """
         Return True if the line does not begin with a comment
