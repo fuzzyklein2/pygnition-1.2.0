@@ -37,12 +37,12 @@ details here.
 import os
 from pprint import pformat
 
-from ._metadata import PACKAGE_NAME as PROJECT_NAME
+# from ._metadata import PACKAGE_NAME as PROJECT_NAME
 from .utils import *
 
 class Environment(dict):
     @auto_doc(AUTO_DOC_HEAD)
-    def __init__(self, prefix=PROJECT_NAME.upper()+'_', *args, **kwargs):
+    def __init__(self, prefix=PACKAGE_NAME.upper()+'_', *args, **kwargs):
         super().__init__(self, *args, **kwargs)
         
         KEYS = grep(prefix, os.environ.keys())

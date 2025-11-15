@@ -31,15 +31,20 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
+## [GitHub]({get_upstream_url()})
+
 """
 
+import inspect, re, textwrap
+
 from datetime import date
-import inspect
 from pathlib import Path
+
+unwrap = __import__('inspect').unwrap
 
 AUTO_DOC_HEAD = '## `{name}`\n{version} : {date}'
 
-def auto_doc(heading_template=None):
+def auto_doc(heading_template=None, heading_level=2):
     """
     Decorator that preserves the original function docstring and
     appends auto-generated Markdown tables for parameters and return types.
@@ -50,10 +55,6 @@ def auto_doc(heading_template=None):
     - Falls back to reading the source file directly if inspect.getsource() fails.
     - Works safely with other decorators (e.g., @singledispatch, @staticmethod).
     """
-    import inspect, re, textwrap
-    from pathlib import Path
-    
-    unwrap = __import__('inspect').unwrap
 
     def extract_param_and_return_comments(func):
         """Extract inline comments for parameters and return type."""
@@ -111,15 +112,13 @@ def auto_doc(heading_template=None):
         lines = []
 
         # Optional heading
-        if heading_template:
-            lines.append(
-                heading_template.format(
-                    name=real_func.__name__,
-                    version=VERSION,
-                    date=LAST_SAVED_DATE,
-                )
-            )
-            lines.append("")
+        # if heading_template:
+        sig = inspect.signature(real_func)
+        hashes = "#" * heading_level
+        lines.append(f"{hashes} {real_func.__name__}")
+        lines.append(f"{VERSION} : {LAST_SAVED_DATE}")
+        lines.append(f"##### {real_func.__name__}{str(sig)}")
+        lines.append("")
 
         # Preserve existing docstring
         if orig_doc.strip():
@@ -188,9 +187,6 @@ def auto_class_doc(heading_template=None):
     - Lists class attributes (constants, defaults, etc.).
     """
 
-    import inspect, re, textwrap
-    from pathlib import Path
-
     def extract_param_comments(func):
         """Extract inline comments for parameters in a function definition."""
         src = None
@@ -232,15 +228,14 @@ def auto_class_doc(heading_template=None):
         lines = []
 
         # Optional heading
-        if heading_template:
-            lines.append(
-                heading_template.format(
-                    name=cls.__name__,
-                    version=VERSION,
-                    date=LAST_SAVED_DATE,
-                )
-            )
-            lines.append("")
+        # if heading_template:
+        init = getattr(cls, "__init__", None)
+        sig = str(inspect.signature(init)) if init else "()"
+        lines.append('<!-- -->')
+        lines.append(f"## {cls.__name__}")
+        lines.append(f"{VERSION} : {LAST_SAVED_DATE}")
+        lines.append(f"##### {sig}")
+        lines.append("")
 
         # Preserve class-level docstring
         if orig_doc:
@@ -324,45 +319,50 @@ def auto_class_doc(heading_template=None):
 
     return decorator
 
-# # Example usage
-# @auto_doc("Function: {name} (module version {version}, generated {date})")
-# def add(a: int, b: int = 0) -> int:
-#     """Add two numbers together in a friendly way."""
-#     return a + b
+# Example usage
+@auto_doc()
+def add( a: int,    # 1st number
+         b: int = 0 # 2nd number
+       ) -> int:    # sum of the numbers
+    """Add two numbers together in a friendly way."""
+    return a + b
 
 
-# @auto_doc()
-# def greet(name: str) -> str:
-#     """Say hello to someone."""
-#     return f"Hello, {name}!"
+@auto_doc()
+def greet(name: str # name to greet
+         ) -> str:  # full greeting
+    """Say hello to someone."""
+    return f"Hello, {name}!"
 
-# @auto_class_doc("### `{name}` (v{version}, updated {date})")
-# class Workshop:
-#     """Manage and build workshop projects."""
+@auto_class_doc()
+class Workshop:
+    """Manage and build workshop projects."""
 
-#     DEFAULT_TIMEOUT = 30
-#     LOG_FILE = "workshop.log"
+    DEFAULT_TIMEOUT = 30
+    LOG_FILE = "workshop.log"
 
-#     def __init__(self, root: Path, verbose: bool = False, dry_run: bool = False  # simulate actions
-#                  ):
-#         """Initialize a workshop environment."""
-#         self.root = root
-#         self.verbose = verbose
-#         self.dry_run = dry_run
+    def __init__(self, root:                  # Application folder
+                 Path, verbose: bool = False, # whether to talk a lot
+                 dry_run: bool = False        # simulate actions
+                ):
+        """Initialize a workshop environment."""
+        self.root = root
+        self.verbose = verbose
+        self.dry_run = dry_run
 
-#     def build(self, force: bool = False):
-#         """Build the workshop project."""
-#         pass
+    def build(self, force: bool = False):
+        """Build the workshop project."""
+        pass
 
-#     def clean(self):
-#         """Remove build artifacts."""
-#         pass
+    def clean(self):
+        """Remove build artifacts."""
+        pass
 
 if __name__ == "__main__":
-    # print(add.__doc__)
-    # print("\n" + "-" * 40 + "\n")
-    # print(greet.__doc__)
-    # print("\n" + "-" * 40 + "\n")
-    # print(Workshop.__doc__)
+    print(add.__doc__)
+    print("\n" + "-" * 40 + "\n")
+    print(greet.__doc__)
+    print("\n" + "-" * 40 + "\n")
+    print(Workshop.__doc__)
     import doctest
     doctest.testmod()

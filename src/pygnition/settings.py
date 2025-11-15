@@ -125,7 +125,7 @@ SETTINGS = dict()
 if CONFIG: SETTINGS.update(dict(CONFIG['DEFAULT']))
 if ENV: SETTINGS.update(ENV)
 if ARGS: SETTINGS.update(vars(ARGS))
-if INPUT: SETTINGS.update({'input', INPUT})
+if INPUT: SETTINGS.update({'input': INPUT})
 
 
 

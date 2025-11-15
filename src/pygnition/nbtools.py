@@ -38,6 +38,7 @@ import inspect
 
 from IPython.display import display, Markdown
 
+from .files import File
 from .lumberjack import *
 
 @get_func_name2
@@ -67,7 +68,30 @@ def _(obj:object, lang:str='python')->None:
 
 # Get the path of the currently running Jupyter notebook.
 
-@auto_doc('Move to the project working directory')
+@auto_doc()
 def find_proj_root():
+    """ Move to the project root directory. """
     if cwd().stem == 'notebooks': cd('../')
     pwd()
+
+@auto_doc()
+def run_file(s: str # Name of the module to run. Should NOT include '.py' at the end.
+            ):
+    """ Run a python file. Should be expandable to include other script languages as well. """
+    
+    p = File(f'{cwd()}/src/{Path.cwd().name.split('-')[0]}/{s}.py').run()
+    
+    print(f"""{p.args} results:
+
+Return code: {p.returncode}
+""")
+    if p.stderr:
+        print(f"""Error output:
+
+{p.stderr}
+""")
+    if p.stdout:
+        print(f"""Standard output:
+
+{p.stdout}
+""")

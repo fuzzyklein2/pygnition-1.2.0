@@ -30,6 +30,8 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
+## [GitHub]({get_upstream_url()})
+
 """
 
 
@@ -48,7 +50,7 @@ from ._imports import import_chain
 from .interpreters import Interpreters, INTERPRETER
 from .lists import first_after_last_digits
 
-RUNNING_CLI = INTERPRETER in { Interpreters.CLI,
+RUNNING_CLI = INTERPRETER in {Interpreters.CLI,
                               Interpreters.GATEWAY,
                               Interpreters.TKINTER,
                               Interpreters.UNKNOWN
@@ -59,6 +61,8 @@ RUNNING_JUPYTER = INTERPRETER == Interpreters.JUPYTER
 RUNNING_CONSOLE = INTERPRETER in { Interpreters.CONSOLE,
                                    Interpreters.IPYTHON
                                  }
+
+RUNNING_GATEWAY = INTERPRETER == Interpreters.GATEWAY
 
 
 try:
@@ -92,14 +96,14 @@ VERBOSE = bool({'-v', '--verbose'}.intersection(sys.argv)) or DEBUG
 @auto_doc(AUTO_DOC_HEAD)
 def display_where_info():
     """Test this module from any project directory that imports it."""
-    print(f"Running: {PROGRAM_NAME}")
-    print(f"Program path: {PROGRAM_PATH}")
-    print(f"Ignition directory: {PYGNITION_DIRECTORY}")
-    print(f"Project directory: {PROJECT_DIR}")
-    print(f"Project data: {PROJ_DATA}")
+    print(f"Running: {PACKAGE_NAME}")
+    print(f"Program path: {PACKAGE_PATH}")
+    print(f"Ignition directory: {str(Path(__file__).parent.parent)}")
+    print(f"Project directory: {str(PACKAGE_PATH.parent.parent.parent)}")
+    print(f"Project data: {PROJECT_DATA_DIR}")
     print(f"User data directory: {USER_DATA_DIR}")
     print(f"Interpreter: {INTERPRETER.name}")
-    print(f"RUNNING_CLI={RUNNING_CLI}, RUNNING_IN_JUPYTER={RUNNING_IN_JUPYTER}, "
+    print(f"RUNNING_CLI={RUNNING_CLI}, RUNNING_IN_JUPYTER={RUNNING_JUPYTER}, "
           f"RUNNING_CONSOLE={RUNNING_CONSOLE}, RUNNING_GATEWAY={RUNNING_GATEWAY}")
 
 @auto_doc()

@@ -30,13 +30,15 @@ args = parse_arguments()
 You can include implementation notes, dependencies, or version-specific
 details here.
 
+## [GitHub]({get_upstream_url()})
+
 """
 
 
 from datetime import datetime
 import sys
 
-from .interpreters import RUNNING_CLI
+from .interpreters import RUNNING_CLI, RUNNING_IN_JUPYTER
 from .picts import CRITICAL_PICT, current_clock_pict, DEBUG_PICT, ERROR_PICT, GEAR_PICT, INFO_PICT, LOG_PICT, WARNING_PICT
 from .tools import *
 from .where import USER_DATA_DIR, VERBOSE
@@ -65,11 +67,12 @@ def setuplog(LOGFILE:Path|str, level):
     # Formatter
     formatter = logging.Formatter('%(message)s')
     # formatter = logging.Formatter(f'{LOG_PICTS
-    
-    # Console handler
-    console_handler = logging.StreamHandler(sys.stderr)
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+
+    if not RUNNING_IN_JUPYTER:
+        # Console handler
+        console_handler = logging.StreamHandler(sys.stderr)
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
     
     # File handler
     file_handler = logging.FileHandler(LOGFILE)

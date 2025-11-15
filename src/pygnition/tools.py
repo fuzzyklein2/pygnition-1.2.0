@@ -51,7 +51,7 @@ from rich.console import Console
 
 from ._auto_doc import auto_doc
 from .colors import DIR_BLUE, DIR_GREEN
-from .picts import ASK_PICT, DEBUG_PICT, FOLDER_PICT, INFO_PICT, NEWLINE
+from .picts import ASK_PICT, DEBUG_PICT, ERROR_PICT, FOLDER_PICT, INFO_PICT, NEWLINE, WARNING_PICT
 
 @auto_doc(AUTO_DOC_HEAD)
 def cwd():
@@ -70,14 +70,14 @@ def cd(p:str|Path)->Path|None:
     """Change the current working directory."""
     p = Path(p)
     if not p.exists():
-        warn(f'Directory [green]{str(p)}[end] does not exist!')
+        rp(f'{WARNING_PICT}[yellow]WARNING[/yellow]: Directory [green]{str(p)}[end] does not exist!')
     os.chdir(p)
     return p
 
 @auto_doc(AUTO_DOC_HEAD)
 def columnize(L:list[str]):
     """ Arrange the list of strings into columns. `rich` handles spacing of its color strings. """
-    Console().print(Columns(sorted(public(Path)), expand=True, equal=True))
+    Console().print(Columns(sorted(L), expand=True, equal=True))
 
 @auto_doc(AUTO_DOC_HEAD)
 def public(obj)->list:
@@ -184,14 +184,14 @@ def subdirs(arg=None, all: bool = False) -> list[Path] | None:
     if arg is None:
         return subdirs(Path(os.curdir), all=all)
 
-    error(f": subdirs : bad argument : {arg!r} : must be str or Path")
+    rp(f"{ERROR_PICT}[red]ERROR[/red]: subdirs : bad argument : {arg!r} : must be str or Path")
 
 
 @auto_doc()
 def _path_impl(p: Path, all: bool = False) -> list[Path] | None:
     """Return full Paths to top-level subdirectories within `p`."""
     if not p.exists() or not p.is_dir():
-        error(f": subdirs : {p} : not a directory")
+        rp(f"{ERROR_PICT}[red]ERROR[/red]: subdirs : {p} : not a directory")
 
     dirs = [(p / name).resolve() for name in next(os.walk(p))[1]]
     if not all:

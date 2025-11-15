@@ -37,8 +37,9 @@ details here.
 import sys
 # from rich import print as rp
 
-@auto_doc("Return any piped input.")
+@auto_doc()
 def get_piped_input() -> str|None:
+    """ Return any piped input. """
     if not sys.stdin.isatty():
         INPUT = sys.stdin.read()
         return INPUT

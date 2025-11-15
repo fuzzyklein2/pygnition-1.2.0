@@ -32,7 +32,6 @@ details here.
 
 """
 
-
 import atexit
 
 from rich import print as rp
@@ -55,6 +54,7 @@ class Program(Settings):
 
     def run(self):
         debug(f'Running {self.program_name}')
+        self.under_construction()
         if self.testing: self.test()
 
     def test(self):

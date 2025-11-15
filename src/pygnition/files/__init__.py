@@ -50,39 +50,41 @@ Check the package [reference documentation](docs/markdown/index.md) for details.
 
 """
 
-from .files import File
-from .datafile import DataFile
-from .textfile import TextFile
-from .binaryfile import BinaryFile
-from .folders import Folder, WebSiteFolder
-from .picklefile import PickleFile
-from .jsonfile import JSONFile
-from .csvfile import CSVFile
-from .imagefile import ImageFile
-from .pngfile import PNGFile
-from .jpegfile import JPEGFile
-from .giffile import GIFFile
-from .videofile import VideoFile
-from .mp4file import MP4File
-from .avifile import AVIFile
-from .mkvfile import MKVFile
-from .audiofile import AudioFile
-from .mp3file import MP3File
-from .wavfile import WAVFile
-from .flacfile import FLACFile
-from .archivefile import ArchiveFile
-from .configfile import ConfigFile
-from .databasefile import DatabaseFile
-from .logfile import LogFile
-from .htmlfile import HTMLFile
-from .jsfile import JSFile
-from .cssfile import CSSFile
-from .cgifile import CGIFile
-from .scriptfile import ScriptFile
-from .executablefile import ExecutableFile
-from .specialfile import SpecialFile
-from .fifofile import FIFOFile
-from .socketfile import SocketFile
-from .symlink import SymbolicLink
-from .hardlink import HardLink
-from .mountpoint import MountPoint
+from pygnition.files.files import File
+from pygnition.files.pyfiles import PyFile
+
+from pygnition.files.datafile import DataFile
+from pygnition.files.textfile import TextFile
+from pygnition.files.binaryfile import BinaryFile
+from pygnition.files.folders import Folder, WebSiteFolder
+from pygnition.files.picklefile import PickleFile
+from pygnition.files.jsonfile import JSONFile
+from pygnition.files.csvfile import CSVFile
+from pygnition.files.imagefile import ImageFile
+from pygnition.files.pngfile import PNGFile
+from pygnition.files.jpegfile import JPEGFile
+from pygnition.files.giffile import GIFFile
+from pygnition.files.videofile import VideoFile
+from pygnition.files.mp4file import MP4File
+from pygnition.files.avifile import AVIFile
+from pygnition.files.mkvfile import MKVFile
+from pygnition.files.audiofile import AudioFile
+from pygnition.files.mp3file import MP3File
+from pygnition.files.wavfile import WAVFile
+from pygnition.files.flacfile import FLACFile
+from pygnition.files.archivefile import ArchiveFile
+from pygnition.files.configfile import ConfigFile
+from pygnition.files.databasefile import DatabaseFile
+from pygnition.files.logfile import LogFile
+from pygnition.files.htmlfile import HTMLFile
+from pygnition.files.jsfile import JSFile
+from pygnition.files.cssfile import CSSFile
+from pygnition.files.cgifile import CGIFile
+from pygnition.files.scriptfile import ScriptFile
+from pygnition.files.executablefile import ExecutableFile
+from pygnition.files.specialfile import SpecialFile
+from pygnition.files.fifofile import FIFOFile
+from pygnition.files.socketfile import SocketFile
+from pygnition.files.symlink import SymbolicLink
+from pygnition.files.hardlink import HardLink
+from pygnition.files.mountpoint import MountPoint

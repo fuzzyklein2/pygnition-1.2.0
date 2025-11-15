@@ -33,7 +33,10 @@ details here.
 ## [GitHub](https://github.com/fuzzyklein2/pygnition-1.2.0/)
 
 """
-def is_valid_data_line(s:str)->bool:
+
+def is_valid_data_line(s:str   # Should be a line from a configuration file of some sort.
+                      )->bool: # True if the line does not start with a comment.
+                               # Other criteria should probably be involved as well.
     """
         Return True if the line does not begin with a comment
         and False if it does
@@ -49,10 +52,19 @@ def is_valid_data_line(s:str)->bool:
     if s.startswith('#') or s.isspace() or not s: return False
     return True
 
-def get_data(p: Path, s: str) -> str:
+def get_data(p: Path, # This must be the application data path `root/src/app/data`.
+             s: str   # The stem of the desired filename.
+            ) -> str: # The contents of the file `root/src/<app_name>/`s`.txt.
     """ Get the contents of the file p / s.txt """
     data_file = p / f'{s}.txt'
     try:
         return data_file.read_text()
     except FileNotFoundError:
         return ''
+
+if __name__ == '__main__':
+    print(f'Testing {__file__}')
+    import doctest
+    doctest.testmod()
+    print(f'{__file__} execution complete.')
+    

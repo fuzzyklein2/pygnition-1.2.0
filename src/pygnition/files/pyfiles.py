@@ -67,25 +67,43 @@ class PyFile(SrcFile):
     def is_in_package(self) -> bool:
         return (self.path.parent / '__init__.py').exists()
 
-    @cwd_mover()
+    def is_in_program(self) -> bool:
+        return (self.path.parent / '__main__.py').exists()
+
+    # @cwd_mover()
     def run(self) -> subprocess.CompletedProcess | None:
+        start_cwd = cwd()
         if not self.path: 
             self.pick()
         if not self.path:
             return None
 
         if self.is_in_package():
-            debug(f'File {str(self.path)} is in a package folder.')
             cd(self.path.parent.parent)
             debug(f'Changed to directory {cwd()}')
-            process = run_cmd([
-                sys.executable,
-                '-m',
-                f'{self.path.parent.name}.{self.path.stem}'
-            ])
+            # run_cmd = partial(run, encoding='utf-8', capture_output=True, check=False, shell=True)
+            process = subprocess.run([
+                    sys.executable,
+                    '-m',
+                    f'{self.path.parent.name}.{self.path.stem}'
+                ],
+                text = True,
+                capture_output = True,
+                check = False,
+                shell = False
+            )
+            # cd(self.run._CWD)
         else:
-            process = run_cmd([sys.executable, str(self.path)])
+            process = subprocess.run([
+                    sys.executable,
+                    f'{str(self.path.resolve())}'
+                ],
+                text = True,
+                capture_output = True,
+                check = False,
+                shell = False
+            )
 
-        cd(self.run._CWD)
-        debug(f'Changed back to {cwd()}')
+        cd(start_cwd)
         return process
+

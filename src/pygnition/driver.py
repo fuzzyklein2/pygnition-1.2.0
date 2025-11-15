@@ -45,6 +45,8 @@ import shlex
 import shutil
 from types import SimpleNamespace
 
+from rich import print as rp
+
 from pygnition.arguments import get_args
 from pygnition.configure import configure
 # from pygnition.constants import EPILOG
@@ -55,11 +57,12 @@ from pygnition.settings import Settings, SETTINGS
 from pygnition.tools import chk_cmd, run_cmd
 from pygnition.where import PROJ_DATA, USER_PREFS_DIR
 
+
 class Driver(Cmd, Program):
 
     class Command(SimpleNamespace):
         @auto_doc("Initialize the `Command` object.")
-        def __init__(self, name, line, *args, **kwargs):
+        def __init__(self, name, *args, **kwargs):
             # self.driver = driver
             super().__init__(**kwargs)
             # self.driver = kwargs['driver']
@@ -67,7 +70,9 @@ class Driver(Cmd, Program):
             self.cmd_name = name
             self.log = logging.getLogger(name)
             LEVEL = logging.WARN
-            if self.debug or self.testing: LEVEL = logging.DEBUG
+            if self.debug or self.testing:
+                LEVEL = logging.DEBUG
+                self.verbose = True
             elif self.verbose: LEVEL = logging.INFO
             self.log.setLevel(LEVEL)
             self.log.info('Command object initialized.')
@@ -106,6 +111,9 @@ class Driver(Cmd, Program):
         line = shlex.split(line)
         OPTS_FILE = self.app_dir / 'data' / f'{name}_opts.csv'
         print(f'{OPTS_FILE=}')
+        if not OPTS_FILE.exists():
+            warn(f'File {str(OPTS_FILE)} is missing.')
+            OPTS_FILE = self.app_dir / 'data' / 'std_opts.csv'
         options = list()
         if OPTS_FILE.exists():
             options = get_args(OPTS_FILE)
@@ -138,7 +146,7 @@ class Driver(Cmd, Program):
 
         # pp(settings)
         
-        getattr(self, f'{name.title()}')(name, line, driver=self, **settings).run()
+        getattr(self, f'{name.title()}')(name, driver=self, **settings).run()
 
     @property
     def current_cmd(self):
