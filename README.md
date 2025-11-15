@@ -14,7 +14,7 @@ This project is brand new, although it's based on code I've been playing around 
 
 
 <p align="center">
-  <img src="/home/fuzzy/projects/pygnition-1.2.0c/image/Under_Construction01_transparent.gif" alt="Cute little anime girl with an "Under Construction" sign." width="400">
+  <img src="image/Under_Construction01_transparent.gif" alt="Cute little anime girl with an "Under Construction" sign." width="400">
 </p>
 
 
@@ -41,11 +41,13 @@ Scripts using `pygnition` are designed to be run as modules. Navigate to the pro
 
 ```bash
 py -m hw
+```
 
 The output should be:
 
 ```bash
 Hello, 🌎!
+```
 
 #### 📝 Note:
 
@@ -95,6 +97,7 @@ Configuration:
 {'host': '127.0.0.1', 'logfile': 'logs/program.log', 'port': '8888'}
 
 Hello, 🌎!
+```
 
 #### Source Code
 
@@ -116,7 +119,7 @@ class HW(Program):
     def run(self):
         super().run()
         print(f'Hello, {GLOBE_AMERICA_PICT.strip()} !')
-
+```
 
 ##### `__main__.py`
 
@@ -125,6 +128,6 @@ from .hw import *
 
 if __name__ == '__main__':
     HW().run()
-
+```
 
 #### 📋 TODO:
