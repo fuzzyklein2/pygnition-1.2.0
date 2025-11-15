@@ -69,10 +69,11 @@ def _(obj:object, lang:str='python')->None:
 # Get the path of the currently running Jupyter notebook.
 
 @auto_doc()
-def find_proj_root():
+def find_proj_root(output : bool = True # Whether to output the current directory after moving there.
+                  ):
     """ Move to the project root directory. """
     if cwd().stem == 'notebooks': cd('../')
-    pwd()
+    if output: pwd()
 
 @auto_doc()
 def run_file(s: str # Name of the module to run. Should NOT include '.py' at the end.

@@ -63,7 +63,9 @@ from pygnition.files.csvfile import CSVFile
 from pygnition.files.imagefile import ImageFile
 from pygnition.files.pngfile import PNGFile
 from pygnition.files.jpegfile import JPEGFile
+
 from pygnition.files.giffile import GIFFile
+
 from pygnition.files.videofile import VideoFile
 from pygnition.files.mp4file import MP4File
 from pygnition.files.avifile import AVIFile

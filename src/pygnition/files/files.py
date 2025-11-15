@@ -207,12 +207,6 @@ class File:
     def is_visible(self, p:str|Path)->bool:
         return not is_hidden(p)
     
-    # @auto_doc(AUTO_DOC_HEAD)
-    # def info(self):
-    #     if not self.path:
-    #         return None
-    #     return file_info(str(self.path.resolve()))
-
     @auto_doc(AUTO_DOC_HEAD)
     def mime(self):
         if not self.path:
