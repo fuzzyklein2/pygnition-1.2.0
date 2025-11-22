@@ -41,6 +41,26 @@ class Folder(File):
     def list(self):
         return [File(p) for p in self.path.iterdir()]
 
+    def lsd(self, recursive=False):
+        """ List the contents of the directory. """
+        if not self.path.exists():
+            error(f'Directory {str(self.path)} does not exist!')
+            return
+        if recursive:
+            t = Table('Root', 'Directories', 'Files')
+            for root, dirs, files in os.walk(self.path):
+                if root == os.curdir:
+                    root = self.path.name
+                t.add_row(f'{root}', f'{pformat(dirs)}', f'{pformat(files)}')
+                t.add_row('','','')
+            rp(t)
+        else:
+            L = sorted(self.path.glob('*'))
+            L = ['[cyan bold]' + f.name + '[/cyan bold]' if (self.path / f).is_dir() else f.name for f in L]
+            console.print(f"\n📁  Files in [cyan bold]{str(self.path)}[/cyan bold]:")
+            console.print(Columns(L, expand=True, equal=True))
+            print()
+            
     def tree(self, depth: int = 2):
         def _walk(p, d):
             if d < 0: return
@@ -55,7 +75,7 @@ class PyPackage(Folder):
     def info(self):
         return f"{self.path} (Python package)"
 
-@File.register_folder(lambda p: any(p.glob("*.c")))
+@File.register_folder(lambda p: any(p.rglob("*.c")))
 class CProjectDir(Folder):
     def info(self):
         return f"{self.path} (C project directory)"

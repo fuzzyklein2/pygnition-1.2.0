@@ -3,21 +3,16 @@
 #### Python package meant to simplify the scripting process.
 
 ## Version
-### 1.0.1c
+### 1.2.0c
 This project is brand new, although it's based on code I've been playing around with for years. I wouldn't trust it for anything serious until it's been more completely tested. That said, I'm not having any serious problems with it or anything. 🤷
 
 ## ⚠️ WARNING! ⚠️
 
 #### This project is _UNDER CONSTRUCTION_!
 
-
-
-
 <p align="center">
   <img src="image/Under_Construction01_transparent.gif" alt="Cute little anime girl with an "Under Construction" sign." width="400">
 </p>
-
-
 
 ## Requirements
 
@@ -98,6 +93,15 @@ Configuration:
 
 Hello, 🌎!
 ```
+#### 📝 Note:
+I tweaked the output of the `dump` function to look like this, but it's not how the
+values in question are actually stored. The `Program` class subclasses Python's
+`SimpleNamespace` so we have:
+
+```python
+Program.args, Program.debug, Program.logfile ...
+```
+with no `dict` objects actually involved.
 
 #### Source Code
 

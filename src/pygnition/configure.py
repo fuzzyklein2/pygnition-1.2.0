@@ -50,6 +50,7 @@ def config(p:str|Path)->dict:
     d = dict()
     for l in lines:
         k, _, v = l.partition('=')
+        v = v.partition('#')[0]
         d[k.strip()] = v.strip()
     return d
 
@@ -96,6 +97,20 @@ def configure(files:list|None=None):
 # ''')
     return Configuration(files)
     
+@auto_doc()
+def get_user_pref(name: str # Key name to look for in the config file.
+                 ) -> str:  # Everything after the '=' and before any '#' if a matching line is
+                            # found. `''` if no match is found, or maybe `None`.
+    """ Read the file at `Path.home() / ('.' + PACKAGE_NAME) / 'config.ini') and look for a
+        value to match the given key.
+    """
+    PREFS_FILE = USER_PREFS_DIR / 'prefs.cfg'
+    prefs = config(PREFS_FILE)
+    try:
+        return prefs[name]
+    except KeyError:
+        return None
+    
 if __name__ == '__main__':
     from pprint import pprint as pp
     
@@ -106,3 +121,4 @@ if __name__ == '__main__':
     # print("Running `configure.py` ...")
     config = configure(USER_PREFS_DIR / 'config.ini')
     pp(config.as_dict())
+

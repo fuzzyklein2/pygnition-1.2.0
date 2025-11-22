@@ -37,6 +37,7 @@ details here.
 NEWLINE = '\n'
 HYPHEN = '-'
 SPACE = ' '
+EMPTY_STR = ''
 
 if __name__ == '__main__':
     pass
