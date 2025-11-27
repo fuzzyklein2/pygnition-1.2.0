@@ -34,10 +34,15 @@ details here.
 
 """
 
+import re
+
 NEWLINE = '\n'
 HYPHEN = '-'
 SPACE = ' '
 EMPTY_STR = ''
+PERIOD = '.'
+
+IMPORT_RE = re.compile(r'^\s*(?:import|from)\s+([a-zA-Z_][a-zA-Z0-9_\.]*)', re.MULTILINE)
 
 if __name__ == '__main__':
     pass

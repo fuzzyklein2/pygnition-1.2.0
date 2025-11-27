@@ -35,6 +35,31 @@ details here.
 """
 
 import keyword
+import re
 
 def is_valid_module_name(name: str) -> bool:
     return name.isidentifier() and not keyword.iskeyword(name)
+
+def slugify(text: str) -> str:
+    """
+    Convert a string into a URL-friendly “slug”.
+
+    Steps:
+    - Lowercase the text.
+    - Remove all characters except word characters, whitespace, and hyphens.
+    - Replace spaces with hyphens.
+
+    Parameters
+    ----------
+    text : str
+        The input string to convert.
+
+    Returns
+    -------
+    str
+        A sanitized, hyphen-separated slug suitable for filenames or URLs.
+    """
+    text = text.lower()
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = text.replace(" ", "-")
+    return text

@@ -111,3 +111,10 @@ if CALLING_MODULE:
         # Running in interactive console or notebook
         PROGRAM_PATH = None
 
+def in_jupyter() -> bool:
+    try:
+        from IPython import get_ipython
+        return get_ipython() is not None
+    except Exception:
+        return False
+

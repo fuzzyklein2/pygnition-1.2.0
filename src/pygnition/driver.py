@@ -97,15 +97,6 @@ class Driver(Cmd, Program):
         print()
         self.prompt = f"[{self.program_name}]: "
 
-    def do_done(self, line):
-        self.poker_table.reset()
-        print()
-        self.prompt = f"Ready for {'the' if self.poker_table.status else 'a'} {PROMPTS[self.poker_table.status]}: "
-
-    # def revise(self):
-        # self.poker_table.revise()
-        
-
     @auto_doc("Parse the command line as if it were actually a command line.")
     def get_opts(self, name:str, line:str)->argparse.Namespace|None:
         line = shlex.split(line)

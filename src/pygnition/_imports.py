@@ -33,11 +33,13 @@
 
 # """
 
-from importlib import resources
+from importlib import import_module, resources
 import inspect
-from pathlib import Path
-import sys
 import os
+from pathlib import Path
+import runpy
+import sys
+import traceback
 
 def import_chain():
     stack = inspect.stack()
@@ -72,13 +74,6 @@ def pkg_path(name:str) -> Path:
     Return the root path of this installed package.
     Raises RuntimeError if the package is not importable.
     """
-    # Detect Jupyter (just for reference, though it's not critical anymore)
-    def in_jupyter() -> bool:
-        try:
-            from IPython import get_ipython
-            return get_ipython() is not None
-        except Exception:
-            return False
 
     # --- Verify package is importable ---
     try:
@@ -92,4 +87,19 @@ def pkg_path(name:str) -> Path:
 
     # --- Return the installed package root ---
     return Path(resources.files(name))
+
+def safe_import_module(module_name: str, project_dir: Path) -> Tuple[Optional[Union[ModuleType, dict]], Optional[str]]:
+    try:
+        mod = import_module(module_name)
+        return mod, None
+    except Exception:
+        first_tb = traceback.format_exc()
+    try:
+        module_globals = runpy.run_module(module_name, run_name=module_name, alter_sys=True)
+        return module_globals, None
+    except Exception:
+        second_tb = traceback.format_exc()
+        combined = f"Import attempt using importlib.import_module failed:\n\n{first_tb}\n\n" \
+                   f"Fallback attempt using runpy.run_module failed:\n\n{second_tb}"
+        return None, combined
 

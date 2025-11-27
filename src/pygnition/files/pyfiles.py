@@ -42,6 +42,7 @@ from ..lumberjack import debug, error, info, stop, warn
 from ..tools import cd, cwd, run_cmd
 from ..where import cwd_mover
 
+from ..constants import *
 from .files import File
 from .textfiles import SrcFile
 
@@ -107,3 +108,12 @@ class PyFile(SrcFile):
         cd(start_cwd)
         return process
 
+    def find_imports(self) -> set[str]:
+        """ Return the names of all the modules imported by this file. """
+        text = self.read_text(encoding='utf-8')
+        imports = set()
+        for match in IMPORT_RE.finditer(text):
+            imports.add(match.group(1).split(PERIOD)[0])
+        return imports
+
+    

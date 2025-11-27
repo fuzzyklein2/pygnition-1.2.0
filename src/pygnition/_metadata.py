@@ -16,6 +16,13 @@ from ._git_tools import get_upstream_url
 from ._imports import import_chain, pkg_path
 from ._last_saved_date import last_saved_datetime
 from ._read_lines import read_lines
+# from .nbtools import find_proj_root
+
+    # if cwd().stem == 'notebooks': cd('../')
+    # if output: pwd()
+
+CWD = Path.cwd()
+PACKAGE_NAME = import_chain()[0] if '__file__' in globals() else f'{(CWD.parent if CWD.stem == 'notebooks' else CWD).stem}'
 
 PACKAGE_NAME = __package__
 # pp(import_chain())

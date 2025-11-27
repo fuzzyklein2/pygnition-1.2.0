@@ -32,7 +32,6 @@ details here.
 
 """
 
-
 from functools import singledispatch
 import inspect
 
@@ -40,6 +39,20 @@ from IPython.display import display, Markdown
 
 from .files import File
 from .lumberjack import *
+
+@auto_doc()
+def display_doc(func):
+    """
+    Display a function or class docstring as Markdown in Jupyter Lab
+    safely, avoiding duplicated headers.
+    """
+    doc = func.__doc__ or ""
+    # Split lines and remove any that are blank at the start
+    lines = doc.splitlines()
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    cleaned_doc = "\n".join(lines)
+    display(Markdown(cleaned_doc))
 
 @get_func_name2
 @auto_doc()

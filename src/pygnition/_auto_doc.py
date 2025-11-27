@@ -341,6 +341,7 @@ class Workshop:
     DEFAULT_TIMEOUT = 30
     LOG_FILE = "workshop.log"
 
+    @auto_doc(heading_level=3)
     def __init__(self, root:                  # Application folder
                  Path, verbose: bool = False, # whether to talk a lot
                  dry_run: bool = False        # simulate actions
@@ -350,10 +351,13 @@ class Workshop:
         self.verbose = verbose
         self.dry_run = dry_run
 
+    
+    @auto_doc(heading_level=3)
     def build(self, force: bool = False):
         """Build the workshop project."""
         pass
 
+    @auto_doc(heading_level=3)
     def clean(self):
         """Remove build artifacts."""
         pass
