@@ -75,8 +75,13 @@ except (ImportError, ModuleNotFoundError) as e:
         print(f'Pygnition import failed!')
 
 PROJ_DATA = PACKAGE_PATH / 'data'
+
+if not PROJ_DATA.exists():
+    PROJ_DATA = PACKAGE_PATH.parent / 'data'
+
 USER_DATA_DIR = Path.home() / f".{PACKAGE_NAME}"
 USER_PREFS_DIR = USER_DATA_DIR / "etc"
+
 
 # ---------------------------
 # Runtime options

@@ -62,8 +62,12 @@ ARGS_FILE = PROJ_DATA / 'std_opts.csv'
 
 # CONFIG_FILE = PROJECT_DIR / 'etc/config.ini'
 # LOG_FILE = PROJECT_DIR / f'logs/{PROGRAM_NAME}.log'
+APP_DEFAULT_PREFS_DIR = PACKAGE_PATH / 'etc'
+if not APP_DEFAULT_PREFS_DIR.exists():
+    APP_DEFAULT_PREFS_DIR = PACKAGE_PATH.parent / 'etc'
+    
 if not USER_PREFS_DIR.exists():
-    shutil.copytree(PACKAGE_PATH / 'etc', USER_PREFS_DIR)
+    shutil.copytree(APP_DEFAULT_PREFS_DIR, USER_PREFS_DIR)
 CONFIG_FILES = [USER_PREFS_DIR / s for s in os.listdir(USER_PREFS_DIR) if Path(s).suffix in {'.ini', '.cfg'}]
 
 LOG_FILE = USER_DATA_DIR / f'logs/{PACKAGE_NAME}.log'

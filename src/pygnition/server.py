@@ -5,6 +5,7 @@ from pathlib import Path
 from .startmeup import *
 
 MODULE_NAME = Path(__file__).stem
+PROGRAM_NAME = PACKAGE_NAME
 
 __doc__ = f"""Python IDE for the command line.
 
@@ -12,7 +13,7 @@ __doc__ = f"""Python IDE for the command line.
 This project is currently under construction.
 Stay tuned for updates.
 
-Module: {PROJECT_NAME}.{MODULE_NAME}
+Module: {PROGRAM_NAME}.{MODULE_NAME}
 Version: {VERSION}
 Author: {AUTHOR}
 Date: {LAST_SAVED_DATE}
@@ -32,11 +33,10 @@ details here.
 
 """
 
-
-
 import atexit
 import http.server
 from pathlib import Path
+from pprint import pformat
 import socketserver
 import sys
 import threading
@@ -52,10 +52,11 @@ IGNITION_PATH = LOCATION_PATH.read_text().strip()
 sys.path.insert(0, str(IGNITION_PATH))
 '''
 
-from .lumberjack import stop
-from pygnition._metadata import PACKAGE_PATH as PROJECT_DIR
+from .interpreters import PROGRAM_PATH
+from .lumberjack import debug, error, info, stop, warn
 from pygnition.picts import *
-from .settings import Settings
+from .program import Program
+from .settings import CONFIG_FILES, Settings
 
 class MyTCPServer(socketserver.TCPServer):
     def __init__(self, server_address, RequestHandlerClass):
@@ -64,8 +65,8 @@ class MyTCPServer(socketserver.TCPServer):
         self.server_port = server_address[1]
         self.allow_reuse_address = True
 
-class Server(Settings):
-    def __init__(self, project_dir=PROJECT_DIR):
+class Server(Program):
+    def __init__(self):
         super().__init__()
         atexit.register(self.shutdown)
 
@@ -85,9 +86,10 @@ class Server(Settings):
         #     debug('Setting default port.')
         #     self.port = 8888
 
-        self.project_dir = project_dir
+        self.project_dir = PACKAGE_PATH.parent
         self.cgi_dir = self.project_dir / 'cgi-bin'
         if not self.cgi_dir.exists():
+            print(f'Project directory: {self.project_dir}')
             stop(f'CGI folder is missing! {WORRIED_PICT}')
 
         self.user_data_dir = USER_DATA_DIR
@@ -106,9 +108,9 @@ Configuration files: {str(CONFIG_FILES)}
 Host: {self.host}
 Port: {self.port}
 `hwww` data directory: {USER_DATA_DIR}
-Project directory: {PROJECT_DIR}
+Project directory: {self.project_dir}
 Program path: {PROGRAM_PATH}
-Log file: {self.logfile}
+Log file: {str(None)}
 ConfigParser: {self.config}
 ''')
 
